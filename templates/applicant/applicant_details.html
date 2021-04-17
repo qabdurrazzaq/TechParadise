@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block page_title %}
+Your Details
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-sm-3"></div>
+    <div class="col-sm-6">
+    <form action="{% url 'applicant' user %}" method="POST" id='applicant_details_form'>{% csrf_token %}
+        <h4 class="text-center">Enter Your Details</h4>
+        <div class="row">
+            <div class="col-sm-6">
+                First Name:
+                <input type="text" name="first_name" class="form-control" placeholder="First Name" required>
+                Qualification:
+                <input type="text" name="qualification" class="form-control" placeholder="Eg: Student, Employee, etc">
+                Github Username:
+                <input type="text" name="github_username" class="form-control" placeholder="Github Username">
+            </div>
+            <div class="col-sm-6">
+                Last Name:
+                <input type="text" name="last_name" class="form-control" placeholder="Last Name" required>
+                Interests:
+                <input type="text" name="interest" class="form-control" placeholder="Your Interests">
+                Achievements:
+                <input type="text" name="achievements" class="form-control" placeholder="Achievements">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                About You
+                <textarea name="about" form="applicant_details_form" class="form-control" placeholder="About Yourself"></textarea>
+                <br>
+                <input type="submit" value="Submit" class="form-control btn btn-success">
+            </div>
+        </div>
+    </form>
+</div>
+</div>
+{% endblock %}

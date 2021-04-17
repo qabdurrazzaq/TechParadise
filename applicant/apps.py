@@ -1,0 +1,6 @@
+from django.apps import AppConfig
+
+class ApplicantConfig(AppConfig):
+    name = 'applicant'
+    def ready(self):
+        import applicant.signals

@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block page_title %}
+{% if git_user is not None %}
+{{git_user.login}} - Github
+{% else %}
+Github - Tech Paradise
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="col-sm-10" style="padding: 10px;">
+    <div class="card-body">
+        <div class="row" style="padding-left: 5px;">
+        <div class="col-sm-6">
+        <form action="" class="d-flex">
+            <input class="form-control me-2" type="search" placeholder="Search Github User By Exact Username" aria-label="Search" name="q" required>
+            <button class="btn btn-outline-success" type="submit">Search</button>
+        </form>
+    </div>
+    <div class="col-sm-3"></div>
+    <div class="col-sm-3">
+        <a href="{% url 'github' user %}" class="btn btn-success">My Repositories</a>
+    </div>
+</div>
+{% if git_user is not None %}
+<br>
+<div class="row" style="padding-left: 5px;">
+    <div class="col-sm-11">
+        <h4>Public Repos for {{git_user.login}} ({{git_user.name}})</h4>
+        {% for repo in repos %}
+        <div class="card" style="margin-bottom: 5px;">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-sm-8">
+                        Repository name: {{repo.name}}
+                    </div>
+                    <div class="col-sm-4 text-muted">
+                        created: {{git_user.updated_at}}
+                    </div>
+                    <a href="https://github.com/{{git_user.login}}/{{repo.name}}">{{git_user.login}}/{{repo.name}}</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% else %}
+<br>
+<h4 class="text-center">No Github Profile found for this username - '({{username}})'</h4>
+{% endif %}
+</div>
+</div>
+{% endblock %}

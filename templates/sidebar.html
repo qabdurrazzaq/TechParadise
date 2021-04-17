@@ -1,0 +1,48 @@
+{% if request.user.is_authenticated %}
+      <div class="d-flex flex-column p-2 bg-light" id="sidebarCollapse">
+        <a href="/applicant" class="link-dark text-decoration-none text-center">
+          <span class="fs-4">{{request.user|capfirst}}</span>
+        </a>
+        <hr>
+        <ul class="nav nav-pills flex-column mb-auto" id="sidenav">
+          <li class="nav-item">
+            <a href="{% url 'applicant' user %}" class="nav-link link-dark text-center" id="profile">
+              Profile
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'github' user %}" class="nav-link link-dark text-center" id="github">
+              Github
+            </a>
+          </li>
+        <li>
+          <a href="#" class="nav-link link-dark text-center" id="orders">
+            Orders
+          </a>
+        </li>
+        <li>
+          <a href="#" class="nav-link link-dark text-center" id="products">
+            Products
+          </a>
+        </li>
+        <li>
+          <a href="#" class="nav-link link-dark text-center" id="customers">
+            Customers
+          </a>
+        </li>
+      </ul>
+    </div>
+    <!-- <script>
+      {# block jquery #}
+      $(document).ready(function () {
+        // $('#sidebarCollapse').on('click', function () {
+          //     $('#sidenav').toggleClass('active');
+          // });
+                $('#sidenav ul li').on('click', function () {
+                  $('#sidenav ul .active').removeClass('active');
+                    $(this).addClass('active');
+                  });
+                });
+                {# endblock #}
+              </script> -->
+{% endif %}

@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block page_title %}
+Tech Paradise - {{request.user|capfirst}}
+{% endblock %}
+
+{% block content %}
+<div class="col-sm-10" style="padding: 10px;">
+<div class="alert alert-success alert-dismissible fade show" role="alert" style="padding-bottom: 0px;margin-bottom: -1px;">
+  <p class="messages text-center">
+    Hello {{request.user}}. Looking for a job? Get job <a href="#" class="link-success">here</a>.
+  </p>
+</div>
+<br>
+<div class="row">
+  <div class="col-sm-10">
+    Username : {{request.user}} <br>
+    {% if applicant_details.first_name is not None %}
+    Full Name = {{applicant_details.first_name}} {{applicant_details.last_name}} <br>
+    {% if applicant_details.github_username %}
+    Github Username: {{applicant_details.github_username}} <br>
+    {% endif %}
+    {% if applicant_details.qualification %}
+    Qualifications: {{applicant_details.qualification}} <br>
+    {% endif %}
+    {% if applicant_details.achievements %}
+    Achievements: {{applicant_details.achievements}} <br>
+    {% endif %}
+    {% if applicant_details.interest %}
+    Interests: {{applicant_details.interest}} <br>
+    {% endif %}
+    {% if applicant_details.about %}
+    About: {{applicant_details.about}}
+    {% endif %}
+    {% else %}
+    <h6 style="text-align: right; font-size: small;" class="text-muted">Complete Your Profile.</h6>
+    {% endif %}
+  </div>
+  <div class="col-sm-2">
+    {% if applicant_details.first_name is not None %}
+    <a href="{% url 'applicant_details' user %}" class="btn btn-success">Edit Profile</a>
+    {% else %}
+    <a href="{% url 'applicant_details' user %}" class="btn btn-success">Add Profile</a>
+    {% endif %}
+  </div>
+</div>
+</div>
+{% endblock %}

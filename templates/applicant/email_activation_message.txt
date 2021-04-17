@@ -1,0 +1,4 @@
+Hello {{user}},
+To activate your account head here;
+{{email_activation_url}}.
+Thanks.

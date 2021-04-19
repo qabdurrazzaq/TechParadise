@@ -10,9 +10,10 @@ def user_created(sender,instance,created,*args,**kwargs):
     if created:
         email_confirmed, email_is_created = ConfirmEmail.objects.get_or_create(user=user)
         if email_is_created:
+            print(sender)
+            print(instance.email)
             short_hash = hashlib.sha1(str(random.random()).encode()).hexdigest()[:5]
-            base, domain = str(user.email).split("@")
-            email_activation_key = hashlib.sha1((str(random.random())+short_hash+base).encode()).hexdigest()
+            email_activation_key = hashlib.sha1((str(random.random())+short_hash).encode()).hexdigest()
             email_confirmed.email_activation_key = email_activation_key
             email_confirmed.save()
             email_confirmed.activate_user_email()

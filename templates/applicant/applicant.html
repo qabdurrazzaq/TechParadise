@@ -33,14 +33,14 @@ Tech Paradise - {{request.user|capfirst}}
     About: {{applicant_details.about}}
     {% endif %}
     {% else %}
-    <h6 style="text-align: right; font-size: small;" class="text-muted">Complete Your Profile.</h6>
     {% endif %}
   </div>
   <div class="col-sm-2">
     {% if applicant_details.first_name is not None %}
     <a href="{% url 'applicant_details' user %}" class="btn btn-success">Edit Profile</a>
     {% else %}
-    <a href="{% url 'applicant_details' user %}" class="btn btn-success">Add Profile</a>
+    <a href="{% url 'applicant_details' user %}" class="btn btn-success">Add Profile</a> <br>
+    <small style="text-align: right; font-size: small" class="text-muted">Complete Your Profile.</small>
     {% endif %}
   </div>
 </div>

@@ -14,6 +14,7 @@ import re
 
 def applicant_login_view(request):
     if not request.user.is_authenticated:
+        # google_client_id = settings.GOOGLE_CLIENT_ID
         form = ApplicantLoginForm(request.POST or None)
         if form.is_valid():
             username = form.cleaned_data['username']
@@ -21,12 +22,16 @@ def applicant_login_view(request):
             user = authenticate(username=username,password=password)
             login(request,user)
             messages.success(request,'Successfully Logged In',extra_tags='safe')
-            return HttpResponseRedirect(reverse('applicant',args=[user]))
-        context = {"form":form,'login':True}
+            return HttpResponseRedirect(reverse('applicant',args=[request.user]))
+        context = {
+            "form":form,
+            'login':True,
+            # "google_client_id":google_client_id,
+        }
         return render(request, "applicant/form.html", context)
     else:
         messages.warning(request,'Already Logged In')
-        return HttpResponseRedirect(reverse('applicant'))
+        return HttpResponseRedirect(reverse('applicant',args=[request.user]))
 
 
 def applicant_logout_view(request):
@@ -38,47 +43,53 @@ def applicant_logout_view(request):
 
 # @login_required
 def applicant_view(request, user):
-    try:
-        applicant_det = request.session['applicant_det']
-    except:
-        applicant_det = None
-        pass
-    try:
-        applicant_details_user = ApplicantDetail.objects.get_or_create(user=request.user)
-    except:
-        HttpResponseRedirect(reverse('applicant_login'))
-    try:
-        applicant_details = ApplicantDetail.objects.get(user=request.user)
-    except:
-        applicant_details = None
-    if applicant_det == 1:
-        applicant_details.first_name = request.POST.get('first_name')
-        applicant_details.last_name = request.POST.get('last_name')
-        applicant_details.qualification = request.POST.get('qualification')
-        applicant_details.interest = request.POST.get('interest')
-        applicant_details.achievements = request.POST.get('achievements')
-        applicant_details.about = request.POST.get('about')
+    if request.user.is_authenticated and str(user) == str(request.user):
         try:
-            applicant_details.github_username = request.POST.get('github_username')
+            applicant_det = request.session['applicant_det']
         except:
-            applicant_details.github_username = None
-        if applicant_details.github_username is not None:
-            access_token = settings.GIT_API_TOKEN
-            g = Github(access_token)
+            applicant_det = None
+            pass
+        try:
+            applicant_details_user = ApplicantDetail.objects.get_or_create(user=request.user)
+        except:
+            HttpResponseRedirect(reverse('applicant_login'))
+        try:
+            applicant_details = ApplicantDetail.objects.get(user=request.user)
+        except:
+            applicant_details = None
+        if applicant_det == 1:
+            applicant_details.first_name = request.POST.get('first_name')
+            applicant_details.last_name = request.POST.get('last_name')
+            applicant_details.qualification = request.POST.get('qualification')
+            applicant_details.interest = request.POST.get('interest')
+            applicant_details.achievements = request.POST.get('achievements')
+            applicant_details.about = request.POST.get('about')
             try:
-                git_user = g.get_user(applicant_details.github_username)
+                applicant_details.github_username = request.POST.get('github_username')
             except:
-                git_user = None
-                messages.error(request,"Invalid Github Username")
-                return HttpResponseRedirect(reverse('applicant_details',args=[user]))
-        applicant_details.save()
-        context = {'applicant_details':applicant_details}
-        request.session['applicant_det'] = 0
-    else:
-        context = {'applicant_details':applicant_details,'user':user}
-    return render(request,"applicant/applicant.html",context)
+                applicant_details.github_username = None
+            if applicant_details.github_username is not None:
+                access_token = settings.GIT_API_TOKEN
+                g = Github(access_token)
+                try:
+                    git_user = g.get_user(applicant_details.github_username)
+                except:
+                    git_user = None
+                    messages.error(request,"Invalid Github Username")
+                    return HttpResponseRedirect(reverse('applicant_details',args=[request.user]))
+            applicant_details.save()
+            context = {'applicant_details':applicant_details}
+            request.session['applicant_det'] = 0
+        else:
+            context = {'applicant_details':applicant_details,'user':user}
+        return render(request,"applicant/applicant.html",context)
+    elif not request.user.is_authenticated:
+        return HttpResponseRedirect(reverse('applicant_login'))
+    elif str(user) != str(request.user):
+        raise NameError('please enter username of currently logged in user')
 
 def applicant_registration_view(request):
+    google_client_id = settings.GOOGLE_CLIENT_ID
     form = ApplicantRegistrationForm(request.POST or None)
     if form.is_valid():
         new_user = form.save(commit=False)
@@ -86,7 +97,10 @@ def applicant_registration_view(request):
         messages.success(request, "Successfully Registered. Confirm your mail first.")
         return HttpResponseRedirect(reverse('applicant_register'))
 
-    context = {"form":form}
+    context = {
+        "form":form,
+        "google_client_id":google_client_id,
+    }
     return render(request, "applicant/form.html", context)
 
 SHA1_RE = re.compile('^[a-f0-9]{40}$')
@@ -158,3 +172,9 @@ def github_view(request,user):
     else:
         context = {}
     return render(request,'applicant/github.html',context)
+
+def applicant_google_login_view(request):
+    return HttpResponseRedirect(reverse('applicant_google_login',args=['?process=login']))
+
+def redirect_view(request):
+    return HttpResponseRedirect(reverse('applicant',args=[request.user]))

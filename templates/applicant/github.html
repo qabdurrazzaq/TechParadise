@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 
+{% load static %}
 {% block page_title %}
 {% if git_user is not None %}
 {{git_user.login}} - Github
@@ -19,15 +20,18 @@ Github - Tech Paradise
         </form>
     </div>
     <div class="col-sm-3"></div>
+    {% if username is not None %}
     <div class="col-sm-3">
         <a href="{% url 'github' user %}" class="btn btn-success">My Repositories</a>
     </div>
+    {% endif %}
 </div>
 {% if git_user is not None %}
 <br>
 <div class="row" style="padding-left: 5px;">
     <div class="col-sm-11">
-        <h4>Public Repos for {{git_user.login}} ({{git_user.name}})</h4>
+        <h4><img src="{% static 'img/github_logo.jpeg' %}" width="50px">{{git_user.login}} ({{git_user.name}})</h4>
+        <h4>Public Repos for {{git_user.login}}</h4>
         {% for repo in repos %}
         <div class="card" style="margin-bottom: 5px;">
             <div class="card-body">
@@ -35,10 +39,7 @@ Github - Tech Paradise
                     <div class="col-sm-8">
                         Repository name: {{repo.name}}
                     </div>
-                    <div class="col-sm-4 text-muted">
-                        created: {{git_user.updated_at}}
-                    </div>
-                    <a href="https://github.com/{{git_user.login}}/{{repo.name}}" class="btn btn-primary">{{git_user.login}}/{{repo.name}}</a>
+                    <a href="https://github.com/{{git_user.login}}/{{repo.name}}" class="link-dark">{{git_user.login}}/{{repo.name}}</a>
                 </div>
             </div>
         </div>
@@ -47,7 +48,7 @@ Github - Tech Paradise
 </div>
 {% else %}
 <br>
-<h4 class="text-center">No Github Profile found for this username - '({{username}})'</h4>
+<!-- <h4 class="text-center">No Github Profile found for this username - '({{username}})'</h4> -->
 {% endif %}
 </div>
 </div>

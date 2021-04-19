@@ -5,8 +5,8 @@ Your Details
 {% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-sm-3"></div>
+<!-- <div class="row"> -->
+    <div class="col-sm-2"></div>
     <div class="col-sm-6">
     <form action="{% url 'applicant' user %}" method="POST" id='applicant_details_form'>{% csrf_token %}
         <h4 class="text-center">Enter Your Details</h4>
@@ -38,5 +38,5 @@ Your Details
         </div>
     </form>
 </div>
-</div>
+<!-- </div> -->
 {% endblock %}

@@ -9,7 +9,8 @@ https://docs.djangoproject.com/en/3.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
-
+from django.shortcuts import HttpResponseRedirect
+from django.urls import reverse
 from pathlib import Path
 import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -39,8 +40,16 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
     'applicant',
 ]
+
+SITE_ID = 1
+LOGIN_REDIRECT_URL = 'http://localhost:8000/redirect'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -102,6 +111,15 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTHENTICATION_BACKENDS = [
+    # ...
+    # Needed to login by username in Django admin, regardless of `allauth`
+    'django.contrib.auth.backends.ModelBackend',
+
+    # `allauth` specific authentication methods, such as login by e-mail
+    'allauth.account.auth_backends.AuthenticationBackend',
+    # ...
+]
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
@@ -133,7 +151,7 @@ STATICFILES_DIRS = [
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-from .credentials import email, host, host_user, host_password, git_api_token
+from .credentials import email, host, host_user, host_password
 
 DEFAULT_FROM_EMAIL = email # RECEIVER'S MAIL ID
 
@@ -143,4 +161,12 @@ EMAIL_HOST_PASSWORD = host_password #SENDER'S MAIL PASSWORD
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
+from .credentials import git_api_token
+
 GIT_API_TOKEN = git_api_token
+
+from .credentials import google_client_id, google_client_secret_key, google_api_key
+
+GOOGLE_CLIENT_ID = google_client_id
+GOOGLE_CLIENT_SECRET_KEY = google_client_secret_key
+GOOGLE_API_KEY = google_api_key

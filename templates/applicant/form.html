@@ -1,5 +1,10 @@
 {% extends 'base.html' %}
 {% load static %}
+
+<!-- {#% block meta_tags %#}
+<meta name="google-signin-client_id" content="{{google_client_id}}">
+{#% endblock %#} -->
+
 {% block page_title %}
 {% if login %}
 Login
@@ -19,10 +24,9 @@ Sign In
                     <h1 class="h3 mb-3 fw-normal text-center">Login</h1>
                     {{form.as_p}}
                     <center><button class="form-control btn btn-lg btn-success text-center" type="submit">Login</button><br><br></center>
-                    <p class="text-center text-muted">____________________ or ____________________</p>
-                    <p class="text-center text-muted">Login with:</p>
+                    <p class="text-center text-muted">____________________ or login with ____________________</p>
                     <div class="text-center">
-                        <a href="#"><img src="{% static 'img/google_logo.jpeg' %}" width="25px" style="margin: auto;"></a>
+                        <a href="{% url 'applicant_google_login' %}" class="btn btn-default"><img src="{% static 'img/google_logo.jpeg' %}" width="25px"></a>
                     </div>
                     <hr>
                     <p class="text-center">Don't have an account? <strong><a href="{% url 'applicant_register' %}" class="link-success">Sign In</a></strong></p>
@@ -34,10 +38,9 @@ Sign In
                     <h1 class="h3 mb-3 fw-normal text-center">Sign In</h1>
                     {{form.as_p}}
                     <center><button class="form-control btn btn-lg btn-success text-center" type="submit">Sign In</button><br><br></center>
-                    <p class="text-center text-muted">____________________ or ____________________</p>
-                    <p class="text-center text-muted">Sign In with:</p>
+                    <p class="text-center text-muted">____________________ or signin with ____________________</p>
                     <div class="text-center">
-                        <a href="#"><img src="{% static 'img/google_logo.jpeg' %}" width="25px" style="margin: auto;"></a>
+                        <a href="{% url 'applicant_google_login' %}" class="btn btn-default"><img src="{% static 'img/google_logo.jpeg' %}" width="25px"></a>
                     </div>
                     <hr>
                     <p class="text-center">Already have an account? <strong><a href="{% url 'applicant_login' %}" class="link-success">Login</a></strong></p>

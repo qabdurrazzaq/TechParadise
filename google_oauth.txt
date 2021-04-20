@@ -1,4 +1,0 @@
-google web app id : - tech-paradise-2002
-client-id : - 54077350965-oikf7b9ftem7aeg3l55ftb4frsp619bc.apps.googleusercontent.com
-client name : - WebClient1
-client secret : - mt3YHUlASVEK8BBzFFP9vPQ7

@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
 {% load static %}
+
 {% block page_title %}
 {% if git_user is not None %}
 {{git_user.login}} - Github
@@ -20,7 +21,7 @@ Github - Tech Paradise
         </form>
     </div>
     <div class="col-sm-3"></div>
-    {% if username is not None %}
+    {% if username is not None and git_user is not None %}
     <div class="col-sm-3">
         <a href="{% url 'github' user %}" class="btn btn-success">My Repositories</a>
     </div>
@@ -48,7 +49,7 @@ Github - Tech Paradise
 </div>
 {% else %}
 <br>
-<!-- <h4 class="text-center">No Github Profile found for this username - '({{username}})'</h4> -->
+<h4 class="text-center">No Github Profile found for this username - '({{username}})'</h4>
 {% endif %}
 </div>
 </div>

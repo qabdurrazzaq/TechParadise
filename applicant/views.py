@@ -12,21 +12,19 @@ import re
 
 # Create your views here.
 
-def applicant_login_view(request):
+def applicant_login_view(request,backend='django.contrib.auth.backends.ModelBackend'):
     if not request.user.is_authenticated:
-        # google_client_id = settings.GOOGLE_CLIENT_ID
         form = ApplicantLoginForm(request.POST or None)
         if form.is_valid():
             username = form.cleaned_data['username']
             password = form.cleaned_data['password']
             user = authenticate(username=username,password=password)
-            login(request,user)
+            login(request,user,backend='django.contrib.auth.backends.ModelBackend')
             messages.success(request,'Successfully Logged In',extra_tags='safe')
             return HttpResponseRedirect(reverse('applicant',args=[request.user]))
         context = {
             "form":form,
             'login':True,
-            # "google_client_id":google_client_id,
         }
         return render(request, "applicant/form.html", context)
     else:
@@ -43,6 +41,7 @@ def applicant_logout_view(request):
 
 # @login_required
 def applicant_view(request, user):
+    request.session['sidebar_view'] = 1
     if request.user.is_authenticated and str(user) == str(request.user):
         try:
             applicant_det = request.session['applicant_det']
@@ -88,8 +87,7 @@ def applicant_view(request, user):
     elif str(user) != str(request.user):
         raise NameError('please enter username of currently logged in user')
 
-def applicant_registration_view(request):
-    google_client_id = settings.GOOGLE_CLIENT_ID
+def applicant_registration_view(request,backend='django.contrib.auth.backends.ModelBackend'):
     form = ApplicantRegistrationForm(request.POST or None)
     if form.is_valid():
         new_user = form.save(commit=False)
@@ -99,13 +97,12 @@ def applicant_registration_view(request):
 
     context = {
         "form":form,
-        "google_client_id":google_client_id,
     }
     return render(request, "applicant/form.html", context)
 
 SHA1_RE = re.compile('^[a-f0-9]{40}$')
 
-def email_activation_view(request,email_activation_key):
+def email_activation_view(request,email_activation_key,backend='django.contrib.auth.backends.ModelBackend'):
     if SHA1_RE.search(email_activation_key):
         try:
             instance = ConfirmEmail.objects.get(email_activation_key=email_activation_key)
@@ -116,10 +113,10 @@ def email_activation_view(request,email_activation_key):
             page_message = "Confirmation Successful"
             instance.confirmed = True
             instance.email_activation_key = "Confirmed"
-            login(request,instance.user)
-            messages.success(request,'Successfully Logged In',extra_tags='safe')
-            return HttpResponseRedirect(reverse('applicant'))
             instance.save()
+            login(request,instance.user,backend='django.contrib.auth.backends.ModelBackend')
+            messages.success(request,'Successfully Logged In',extra_tags='safe')
+            return HttpResponseRedirect(reverse('applicant',args=[instance.user]))
         elif instance is not None and instance.confirmed:
             page_message = "Email Already Confirmed"
         else:
@@ -132,10 +129,12 @@ def email_activation_view(request,email_activation_key):
 
 def applicant_details_view(request,user):
     request.session['applicant_det'] = 1
+    request.session['sidebar_view'] = 0
     context = {'user':user}
     return render(request,'applicant/applicant_details.html',context)
 
 def github_view(request,user):
+    request.session['sidebar_view'] = 1
     access_token = settings.GIT_API_TOKEN
     try:
         username = request.GET.get('q')
@@ -173,8 +172,8 @@ def github_view(request,user):
         context = {}
     return render(request,'applicant/github.html',context)
 
-def applicant_google_login_view(request):
-    return HttpResponseRedirect(reverse('applicant_google_login',args=['?process=login']))
-
 def redirect_view(request):
     return HttpResponseRedirect(reverse('applicant',args=[request.user]))
+
+def applicant_google_login_view(request):
+    return HttpResponseRedirect(reverse('applicant_google_login',args=['?process=login']))

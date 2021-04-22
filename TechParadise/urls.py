@@ -18,6 +18,7 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, re_path, include
 from applicant import views as applicantviews
+from home import views as homeviews
 
 urlpatterns = [
 
@@ -35,6 +36,9 @@ urlpatterns = [
     path('accounts/google/login/',applicantviews.applicant_google_login_view,name='applicant_google_login'),
     re_path(r'^applicant/activate/(?P<email_activation_key>\w+)/$', applicantviews.email_activation_view, name = 'email_activation_view'),
     re_path(r'^applicant/(?P<user>\w+)/github/$',applicantviews.github_view,name='github'),
+
+    # url for home app
+    path('',homeviews.homepage_view,name='homepage')
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

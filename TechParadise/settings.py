@@ -48,8 +48,22 @@ INSTALLED_APPS = [
     'applicant',
 ]
 
+
 SITE_ID = 1
+
 LOGIN_REDIRECT_URL = 'http://localhost:8000/redirect'
+LOGOUT_REDIRECT_URL = 'http://localhost:8000/redirect'
+
+from .credentials import google_client_id, google_client_secret_key
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'APP': {
+            'client_id': google_client_id,
+            'secret': google_client_secret_key,
+        }
+    }
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -164,9 +178,3 @@ EMAIL_USE_TLS = True
 from .credentials import git_api_token
 
 GIT_API_TOKEN = git_api_token
-
-from .credentials import google_client_id, google_client_secret_key, google_api_key
-
-GOOGLE_CLIENT_ID = google_client_id
-GOOGLE_CLIENT_SECRET_KEY = google_client_secret_key
-GOOGLE_API_KEY = google_api_key

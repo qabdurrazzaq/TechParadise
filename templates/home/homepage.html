@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block page_title %}
+Tech Paradise   
+{% endblock %}
+
+{% block content %}
+<h2 class="text-center">Welcome to Tech Paradise</h2>
+{% if not request.user.is_authenticated %}
+<h4 class="text-center" style="margin: 50px 0px 50px 0px;">Get Started</h4>
+<div class="row">
+    <div class="col-sm-6">
+        <div class="row">
+            <div class="col-sm-2"></div>
+            <div class="col-sm-8 text-center">
+                <h5 class="text-center">As an Applicant</h5> <br><br>
+                <div class="text-center">
+                    <a href="{% url 'applicant_login' %}" class="btn btn-success btn-lg text-center form-control">Login</a>
+                    <br><br><h5>or</h5><br>
+                    <a href="{% url 'applicant_register' %}" class="btn btn-success btn-lg text-center form-control">Sign In</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6" style="border-left: 1px solid lightgrey;">
+        <div class="row">
+            <div class="col-sm-2"></div>
+            <div class="col-sm-8 text-center">
+                <h5 class="text-center">As a Company</h5> <br><br>
+                <div class="text-center">
+                    <a href="#" class="btn btn-success btn-lg text-center form-control">Login</a>
+                    <br><br><h5>or</h5><br>
+                    <a href="#" class="btn btn-success btn-lg text-center form-control">Sign In</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

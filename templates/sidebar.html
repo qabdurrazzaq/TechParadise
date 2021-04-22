@@ -1,6 +1,6 @@
 {% if request.user.is_authenticated %}
       <div class="d-flex flex-column p-2 bg-light" id="sidebarCollapse">
-        <a href="/applicant" class="link-dark text-decoration-none text-center">
+        <a href="{% url 'applicant' user %}" class="link-dark text-decoration-none text-center">
           <span class="fs-4">{{request.user|capfirst}}</span>
         </a>
         <hr>
@@ -16,8 +16,8 @@
             </a>
           </li>
         <li>
-          <a href="#" class="nav-link link-dark text-center" id="orders">
-            Orders
+          <a href="#" class="nav-link link-dark text-center" id="linkedin">
+            Linked In
           </a>
         </li>
         <li>

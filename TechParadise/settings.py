@@ -178,3 +178,12 @@ EMAIL_USE_TLS = True
 from .credentials import git_api_token
 
 GIT_API_TOKEN = git_api_token
+
+from .credentials import codeforces_api_key, codeforces_api_secret_key
+CODEFORCES_API_KEY = codeforces_api_key
+CODEFORCES_API_SECRET_KEY = codeforces_api_secret_key
+
+from .credentials import x_rapidapi_codechef_key, x_rapidapi_codechef_host, x_rapidapi_codechef_url
+X_RAPIDAPI_CODECHEF_KEY = x_rapidapi_codechef_key
+X_RAPIDAPI_CODECHEF_HOST = x_rapidapi_codechef_host
+X_RAPIDAPI_CODECHEF_URL = x_rapidapi_codechef_url

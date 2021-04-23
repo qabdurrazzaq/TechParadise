@@ -26,8 +26,9 @@
             {% elif 'warning' in message.tags %} alert-warning
             {% elif 'error' in message.tags %} alert-danger
             {% endif %} 
-            alert-dismissible fade show" role="alert" style="padding-bottom: 0px;margin-bottom: -1px;">
-                <p class="messages">
+            alert-dismissible fade show" role="alert" 
+            style="margin-bottom: -1px;padding-bottom: 0rem;">
+                <p class="messages text-center">
                   {% if "safe" in message.tags %}
                     {{ message|safe }}
                   {% else %}

@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block page_title %}
+Codeforces
+{% endblock %}
+
+{% block content %}
+<div class="col-sm-10">
+    <div class="card-body">
+        <div class="row" style="padding-left: 5px;">
+            <div class="col-sm-6">
+                <form action="{% url 'codeforces' user %}" class="d-flex">
+                    <input class="form-control me-2" type="search" placeholder="Search Codeforces User By Exact Username" aria-label="Search" name="q" required>
+                    <button class="btn btn-outline-success" type="submit">Search</button>
+                </form>
+            </div>
+        </div>
+        {% if codeforces_user_info %}
+        <h2>
+            Codeforces User :
+            {{codeforces_user_info.handle}} {% if codeforces_user_info.firstName %}({{codeforces_user_info.firstName}} {{codeforces_user_info.lastName}}){% endif %}
+        </h2>
+    </div>
+    <h4>
+        <div class="row">
+            <div class="col-sm-6">
+                Current Rank:
+                {{codeforces_user_info.rank}} <br> <br>
+                Highest Rank:
+                {{codeforces_user_info.maxRank}} 
+            </div>
+            <div class="col-sm-6">
+                Current Rating:
+                {{codeforces_user_info.rating}} <br> <br>
+                Highest Rating:
+                {{codeforces_user_info.maxRating}}
+            </div>
+        </div>
+    </h4>
+{% if codeforces_rating %}
+<div class="row">
+    <div class="col-sm-12">
+        <br>
+        <table>
+            <thead class="text-center">
+                <tr>
+                    <th style="text-align: left;">
+                        Contests played by {{codeforces_user_info.handle}}
+                    </th>
+                    <th>
+                        Old rating
+                    </th>
+                    <th>
+                        New Rating
+                    </th>
+                    <th>
+                        Contest Rank
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for contest_rating in codeforces_rating %}
+                <tr>
+                    <td>
+                        {{contest_rating.contestName}}
+                    </td>
+                    <td class="text-center">
+                        {{contest_rating.oldRating}}
+                    </td>
+                    <td class="text-center">
+                        {{contest_rating.newRating}}
+                    </td>
+                    <td class="text-center">
+                        {{contest_rating.rank}}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+{% endif %}
+{% endblock %}

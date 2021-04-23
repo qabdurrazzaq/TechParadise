@@ -1,3 +1,4 @@
+from codeforces import api
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import logout, login, authenticate
@@ -7,8 +8,10 @@ from django.urls import reverse
 from github import Github
 from .forms import ApplicantLoginForm, ApplicantRegistrationForm
 from .models import ConfirmEmail, ApplicantDetail
+import json
 import os
 import re
+import requests
 
 # Create your views here.
 
@@ -133,6 +136,12 @@ def applicant_details_view(request,user):
     context = {'user':user}
     return render(request,'applicant/applicant_details.html',context)
 
+def applicant_google_login_view(request):
+    return HttpResponseRedirect(reverse('applicant_google_login',args=['?process=login']))
+
+def redirect_view(request):
+    return HttpResponseRedirect(reverse('applicant',args=[request.user]))
+
 def github_view(request,user):
     request.session['sidebar_view'] = 1
     access_token = settings.GIT_API_TOKEN
@@ -158,6 +167,8 @@ def github_view(request,user):
             git_user = g.get_user(username)
         except:
             git_user = None
+            messages.error(request,"Invalid Github Username")
+            return HttpResponseRedirect(reverse('github',args=[user]))
         if git_user is not None:
             repos = git_user.get_repos()
         else:
@@ -172,8 +183,62 @@ def github_view(request,user):
         context = {}
     return render(request,'applicant/github.html',context)
 
-def redirect_view(request):
-    return HttpResponseRedirect(reverse('applicant',args=[request.user]))
+def codeforces_view(request,user):
+    request.session['sidebar_view'] = 1
+    codeforces_api_key = settings.CODEFORCES_API_KEY
+    codeforces_api_secret_key = settings.CODEFORCES_API_SECRET_KEY
+    try:
+        username = request.GET.get('q')
+        if username is None:
+            try:
+                applicant_details = ApplicantDetail.objects.get(user=request.user)
+            except:
+                applicant_details = None
+            if applicant_details is not None:
+                if applicant_details.github_username is not None:
+                    username = applicant_details.github_username
+                else:
+                    username = None
+            else:
+                username = None
+    except:
+        username = None
+    if username is not None:
+        try:
+            codeforces_user_info = api.call("user.info", key=codeforces_api_key, secret=codeforces_api_secret_key, handles=username)
+            codeforces_rating = api.call("user.rating", key=codeforces_api_key, secret=codeforces_api_secret_key, handle=username)
+            codeforces_rating.reverse()
+            context = {
+                "codeforces_user_info":codeforces_user_info[0],
+                "codeforces_rating":codeforces_rating,
+            }
+        except:
+            messages.error(request,'Invalid Codeforces UserName')
+            return HttpResponseRedirect(reverse('codeforces',args=[user]))
+    else:
+        codeforces_user_info = None
+        codeforces_rating = None
+        context = {}
+    
+    return render(request,'applicant/codeforces.html',context)
 
-def applicant_google_login_view(request):
-    return HttpResponseRedirect(reverse('applicant_google_login',args=['?process=login']))
+def codechef_view(request,user):
+    request.session['sidebar_view'] = 1
+    username = request.GET.get('q')
+    if username is not None:
+        url = settings.X_RAPIDAPI_CODECHEF_URL + "/" + username
+        headers = {
+            'x-rapidapi-key': settings.X_RAPIDAPI_CODECHEF_KEY,
+            'x-rapidapi-host': settings.X_RAPIDAPI_CODECHEF_HOST,
+        }
+        response = requests.request("GET", url, headers=headers)
+        codechef = json.loads(response.text)
+        if codechef['status'] == 'Failed':
+            codechef = None
+            messages.error(request,'Invalid CodeChef Username')
+            return HttpResponseRedirect(reverse('codechef',args=[user]))
+        else:
+            context={'codechef':codechef}
+    else:
+        context = {}
+    return render(request,'applicant/codechef.html',context)

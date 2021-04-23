@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block page_title %}
+CodeChef - {{request.user}}
+{% endblock %}
+
+{% block content %}
+{% if codechef %}
+<div class="col-sm-10">
+    <div class="row card-body" style="padding-left: 5px;">
+        <div class="col-sm-6">
+            <form action="{% url 'codechef' user %}" class="d-flex">
+                <input class="form-control me-2" type="search" placeholder="Search CodeChef User By Exact Username" aria-label="Search" name="q" required>
+                <button class="btn btn-outline-success" type="submit">Search</button>
+            </form>
+        </div>
+    </div>
+    <h4>CodeChef User: {{codechef.user_details.name}} ({{codechef.user_details.username}})</h4>
+    <h5>Stars : {{codechef.stars}}</h5>
+    <div class="row">
+        <div class="col-sm-6">
+            <h5>Current Rating : {{codechef.rating}}</h5>
+            <h5>Global Rank : {{codechef.global_rank}}</h5>
+        </div>
+        <div class="col-sm-6">
+            <h5>Highest Rating : {{codechef.highest_rating}}</h5>
+            <h5>Country Rank : {{codechef.country_rank}}</h5>
+        </div>
+    </div>
+    <br>
+    <div class="row">
+        <div class="col-sm-12">
+            <h5 class="text-center">Contest played by {{codechef.user_details.username}}</h5>
+            <table>
+                <thead class="text-center">
+                    <th>
+                        Contest Code
+                    </th>
+                    <th>
+                        Contest Name
+                    </th>
+                    <th>
+                        Contest Rating
+                    </th>
+                    <th>
+                        Contest Rank
+                    </th>
+                </thead>
+                <tbody>
+                    {% for contest in codechef.contest_ratings %}
+                    <tr>
+                        <td>
+                            {{contest.code}}
+                        </td>
+                        <td>
+                            {{contest.name}}
+                        </td>
+                        <td>
+                            {{contest.rating}}
+                        </td>
+                        <td>
+                            {{contest.rank}}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="col-sm-10">
+    <div class="row card-body" style="padding-left: 5px;">
+        <div class="col-sm-6">
+            <form action="{% url 'codechef' user %}" class="d-flex">
+                <input class="form-control me-2" type="search" placeholder="Search CodeChef User By Exact Username" aria-label="Search" name="q" required>
+                <button class="btn btn-outline-success" type="submit">Search</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

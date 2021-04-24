@@ -38,6 +38,7 @@ urlpatterns = [
     re_path(r'^applicant/(?P<user>\w+)/github/$',applicantviews.github_view,name='github'),
     re_path(r'^applicant/(?P<user>\w+)/codeforces/$',applicantviews.codeforces_view,name='codeforces'),
     re_path(r'^applicant/(?P<user>\w+)/codechef/$',applicantviews.codechef_view,name='codechef'),
+    re_path(r'^applicant/(?P<user>\w+)/leetcode/$',applicantviews.leetcode_view,name='leetcode'),
 
     # url for home app
     path('',homeviews.homepage_view,name='homepage')

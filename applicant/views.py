@@ -50,7 +50,6 @@ def applicant_view(request, user):
             applicant_det = request.session['applicant_det']
         except:
             applicant_det = None
-            pass
         try:
             applicant_details_user = ApplicantDetail.objects.get_or_create(user=request.user)
         except:
@@ -86,6 +85,8 @@ def applicant_view(request, user):
             context = {'applicant_details':applicant_details,'user':user}
         return render(request,"applicant/applicant.html",context)
     elif not request.user.is_authenticated:
+        messages.error(request,'Not Authenticated')
+        print('not autheenticated')
         return HttpResponseRedirect(reverse('applicant_login'))
     elif str(user) != str(request.user):
         raise NameError('please enter username of currently logged in user')
@@ -189,18 +190,6 @@ def codeforces_view(request,user):
     codeforces_api_secret_key = settings.CODEFORCES_API_SECRET_KEY
     try:
         username = request.GET.get('q')
-        if username is None:
-            try:
-                applicant_details = ApplicantDetail.objects.get(user=request.user)
-            except:
-                applicant_details = None
-            if applicant_details is not None:
-                if applicant_details.github_username is not None:
-                    username = applicant_details.github_username
-                else:
-                    username = None
-            else:
-                username = None
     except:
         username = None
     if username is not None:
@@ -233,7 +222,11 @@ def codechef_view(request,user):
         }
         response = requests.request("GET", url, headers=headers)
         codechef = json.loads(response.text)
-        if codechef['status'] == 'Failed':
+        try:
+            status = codechef['status']
+        except:
+            status = None
+        if not status:
             codechef = None
             messages.error(request,'Invalid CodeChef Username')
             return HttpResponseRedirect(reverse('codechef',args=[user]))
@@ -242,3 +235,23 @@ def codechef_view(request,user):
     else:
         context = {}
     return render(request,'applicant/codechef.html',context)
+
+def leetcode_view(request,user):
+    request.session['sidebar_view'] = 1
+    username = request.GET.get('q')
+    if username is not None:
+        url = settings.LEETCODE_URL + "/" + username
+        response = requests.request("GET", url)
+        leetcode = json.loads(response.text)
+        if leetcode['status'] == 'Failed':
+            leetcode = None
+            messages.error(request,'Invalid Leetcode Username')
+            return HttpResponseRedirect(reverse('leetcode',args=[user]))
+        else:
+            context={
+                'leetcode':leetcode,
+                'username':username
+            }
+    else:
+        context = {}
+    return render(request,'applicant/leetcode.html',context)

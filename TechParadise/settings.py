@@ -187,3 +187,6 @@ from .credentials import x_rapidapi_codechef_key, x_rapidapi_codechef_host, x_ra
 X_RAPIDAPI_CODECHEF_KEY = x_rapidapi_codechef_key
 X_RAPIDAPI_CODECHEF_HOST = x_rapidapi_codechef_host
 X_RAPIDAPI_CODECHEF_URL = x_rapidapi_codechef_url
+
+from .credentials import leetcode_url
+LEETCODE_URL = leetcode_url

@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 
+{% load static %}
+
 {% block page_title %}
 CodeChef - {{request.user}}
 {% endblock %}
@@ -15,23 +17,30 @@ CodeChef - {{request.user}}
             </form>
         </div>
     </div>
-    <h4>CodeChef User: {{codechef.user_details.name}} ({{codechef.user_details.username}})</h4>
+    <h4>
+        <p class="fst-italic">
+        <img src="{% static 'img/codechef_logo.jpeg' %}" height="50px">
+            CodeChef User: {{codechef.user_details.name}} ({{codechef.user_details.username}})
+        </p> 
+    </h4>
     <h5>Stars : {{codechef.stars}}</h5>
-    <div class="row">
-        <div class="col-sm-6">
-            <h5>Current Rating : {{codechef.rating}}</h5>
-            <h5>Global Rank : {{codechef.global_rank}}</h5>
+    <strong>
+        <div class="row">
+            <div class="col-sm-6">
+                Current Rating : {{codechef.rating}} <br>
+                Global Rank : {{codechef.global_rank}}
+            </div>
+            <div class="col-sm-6">
+                Highest Rating : {{codechef.highest_rating}} <br>
+                Country Rank : {{codechef.country_rank}}
+            </div>
         </div>
-        <div class="col-sm-6">
-            <h5>Highest Rating : {{codechef.highest_rating}}</h5>
-            <h5>Country Rank : {{codechef.country_rank}}</h5>
-        </div>
-    </div>
+    </strong>
     <br>
     <div class="row">
         <div class="col-sm-12">
-            <h5 class="text-center">Contest played by {{codechef.user_details.username}}</h5>
-            <table>
+            <h5>Contest played by {{codechef.user_details.username}}</h5>
+            <table class="table text-center">
                 <thead class="text-center">
                     <th>
                         Contest Code

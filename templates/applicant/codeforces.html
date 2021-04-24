@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 
+{% load static %}
+
 {% block page_title %}
 Codeforces
 {% endblock %}
@@ -16,35 +18,41 @@ Codeforces
             </div>
         </div>
         {% if codeforces_user_info %}
+        <br>
         <h2>
-            Codeforces User :
-            {{codeforces_user_info.handle}} {% if codeforces_user_info.firstName %}({{codeforces_user_info.firstName}} {{codeforces_user_info.lastName}}){% endif %}
+            <p class="fst-italic">
+                <img src="{% static 'img/codeforces_logo.jpeg' %}" width="50px">
+                Codeforces User :
+                {{codeforces_user_info.handle}} {% if codeforces_user_info.firstName %}({{codeforces_user_info.firstName}} {{codeforces_user_info.lastName}}){% endif %}
+            </p> 
         </h2>
     </div>
     <h4>
-        <div class="row">
-            <div class="col-sm-6">
-                Current Rank:
-                {{codeforces_user_info.rank}} <br> <br>
-                Highest Rank:
-                {{codeforces_user_info.maxRank}} 
+        <strong>
+            <div class="row">
+                <div class="col-sm-6">
+                    Current Rank:
+                    {{codeforces_user_info.rank}} <br> <br>
+                    Highest Rank:
+                    {{codeforces_user_info.maxRank}} 
+                </div>
+                <div class="col-sm-6">
+                    Current Rating:
+                    {{codeforces_user_info.rating}} <br> <br>
+                    Highest Rating:
+                    {{codeforces_user_info.maxRating}}
+                </div>
             </div>
-            <div class="col-sm-6">
-                Current Rating:
-                {{codeforces_user_info.rating}} <br> <br>
-                Highest Rating:
-                {{codeforces_user_info.maxRating}}
-            </div>
-        </div>
+        </strong>
     </h4>
 {% if codeforces_rating %}
 <div class="row">
     <div class="col-sm-12">
         <br>
-        <table>
+        <table class="table text-center">
             <thead class="text-center">
                 <tr>
-                    <th style="text-align: left;">
+                    <th>
                         Contests played by {{codeforces_user_info.handle}}
                     </th>
                     <th>

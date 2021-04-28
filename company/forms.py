@@ -1,46 +1,46 @@
 from django import forms
-from django.conf import settings
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
-class ApplicantLoginForm(forms.Form):
-    username = forms.CharField(max_length=12)
-    password = forms.CharField(widget=forms.PasswordInput())
+class CompanyLoginForm(forms.Form):
+    companyname = forms.CharField(max_length=120, label='Company Name')
+    companypassword = forms.CharField(widget=forms.PasswordInput(),label='Password')
 
-    def clean_username(self):
-        username = self.cleaned_data.get('username')
-        try:
-            user = User.objects.get(username = username)
+    def clean_companyname(self):
+        companyname = self.cleaned_data.get('companyname')
+        try: 
+            user = User.objects.get(username=companyname)
         except User.DoesNotExist:
             user = None
-            raise forms.ValidationError("Username Not Found")
+            raise forms.ValidationError('No Company Registered By This Name')
         except:
             user = None
             pass
-        return username
+        return companyname
 
-    def clean_password(self):
-        username = self.cleaned_data.get('username')
-        password = self.cleaned_data.get('password')
-
+    def clean_companypassword(self):
+        companyname = self.cleaned_data.get('companyname')
+        companypassword = self.cleaned_data.get('companypassword')
         try:
-            user = User.objects.get(username=username)
+            user = User.objects.get(username=companyname)
         except:
             user = None
-        if user is not None and not user.check_password(password):
-            raise forms.ValidationError("Incorrect Password")
+            pass
+
+        if user is not None and not user.check_password(companypassword):
+            raise forms.ValidationError('Incorrect Password')
         elif user is None:
             pass
         else:
-            return password
+            return companypassword
         
-    def __init__(self, *args, **kwargs):
-        super(ApplicantLoginForm, self).__init__(*args, **kwargs)
-        self.fields['username'].widget.attrs.update({'class' : 'form-control','placeholder' : 'Username'})
-        self.fields['password'].widget.attrs.update({'class' : 'form-control','placeholder' : 'Password'})
+    def __init__(self,*args,**kwargs):
+        super(CompanyLoginForm, self).__init__(*args, **kwargs)
+        self.fields['companyname'].widget.attrs.update({'class' : 'form-control','placeholder' : 'Company Name'})
+        self.fields['companypassword'].widget.attrs.update({'class' : 'form-control','placeholder' : 'Password'})
 
-class ApplicantRegistrationForm(forms.ModelForm):
+class CompanyRegistrationForm(forms.ModelForm):
     email = forms.EmailField()
     password = forms.CharField(widget=forms.PasswordInput())
     confirm_password = forms.CharField(widget=forms.PasswordInput(),label='Confirm Password')
@@ -67,14 +67,14 @@ class ApplicantRegistrationForm(forms.ModelForm):
         return email
 
     def save(self, commit=True):
-        user = super(ApplicantRegistrationForm,self).save(commit=False)
+        user = super(CompanyRegistrationForm,self).save(commit=False)
         user.set_password(self.cleaned_data['password'])
         if commit:
             user.save()
         return user
 
     def __init__(self, *args, **kwargs):
-        super(ApplicantRegistrationForm, self).__init__(*args, **kwargs)
+        super(CompanyRegistrationForm, self).__init__(*args, **kwargs)
         self.fields['username'].widget.attrs.update({'class' : 'form-control','placeholder' : 'Username'})
         self.fields['email'].widget.attrs.update({'class' : 'form-control','placeholder' : 'Email'})
         self.fields['password'].widget.attrs.update({'class' : 'form-control','placeholder' : 'Password'})

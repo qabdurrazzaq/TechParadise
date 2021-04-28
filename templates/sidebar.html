@@ -5,6 +5,7 @@
         </a>
         <hr>
         <ul class="nav nav-pills flex-column mb-auto" id="sidenav">
+          {% if request.user.first_name == 'applicant' %}
           <li class="nav-item">
             <a href="{% url 'applicant' user %}" class="nav-link link-dark text-center" id="profile">
               Profile
@@ -15,21 +16,23 @@
               Github
             </a>
           </li>
-        <li>
-          <a href="{% url 'codeforces' user %}" class="nav-link link-dark text-center" id="codeforces">
-            Codeforces
-          </a>
-        </li>
-        <li>
-          <a href="{% url 'codechef' user %}" class="nav-link link-dark text-center" id="codechef">
-            CodeChef
-          </a>
-        </li>
-        <li>
-          <a href="{% url 'leetcode' user %}" class="nav-link link-dark text-center" id="leetcode">
-            Leetcode
-          </a>
-        </li>
+          <li>
+            <a href="{% url 'codeforces' user %}" class="nav-link link-dark text-center" id="codeforces">
+              Codeforces
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'codechef' user %}" class="nav-link link-dark text-center" id="codechef">
+              CodeChef
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'leetcode' user %}" class="nav-link link-dark text-center" id="leetcode">
+              Leetcode
+            </a>
+          </li>
+          {% else %}
+          {% endif %}
       </ul>
     </div>
     <!-- <script>

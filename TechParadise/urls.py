@@ -18,6 +18,7 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, re_path, include
 from applicant import views as applicantviews
+from company import views as companyviews
 from home import views as homeviews
 
 urlpatterns = [
@@ -25,9 +26,12 @@ urlpatterns = [
     # url for admin
     path('admin/', admin.site.urls),
 
+    # url for home app
+    path('',homeviews.homepage_view,name='homepage'),
+    path('accounts/logout',homeviews.session_logout_view,name='session_logout'),
+
     # url for applicant app
     path('applicant/accounts/login/',applicantviews.applicant_login_view,name='applicant_login'),
-    path('applicant/accounts/logout/',applicantviews.applicant_logout_view,name='applicant_logout'),
     path('applicant/accounts/register/',applicantviews.applicant_registration_view,name='applicant_register'),
     re_path(r'^applicant/(?P<user>\w+)/$',applicantviews.applicant_view,name='applicant'),
     re_path(r'^applicant/(?P<user>\w+)/details',applicantviews.applicant_details_view,name='applicant_details'),
@@ -40,8 +44,11 @@ urlpatterns = [
     re_path(r'^applicant/(?P<user>\w+)/codechef/$',applicantviews.codechef_view,name='codechef'),
     re_path(r'^applicant/(?P<user>\w+)/leetcode/$',applicantviews.leetcode_view,name='leetcode'),
 
-    # url for home app
-    path('',homeviews.homepage_view,name='homepage')
+    # url for company app
+    path('company/accounts/login/',companyviews.company_login_view,name='company_login'),
+    path('company/accounts/logout/',companyviews.company_logout_view,name='company_logout'),
+    path('company/accounts/register/',companyviews.company_registration_view,name='company_register'),
+    re_path(r'^company/(?P<user>\w+)/$',companyviews.company_view,name='company'),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

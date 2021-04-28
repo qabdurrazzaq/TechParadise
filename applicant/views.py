@@ -22,9 +22,13 @@ def applicant_login_view(request,backend='django.contrib.auth.backends.ModelBack
             username = form.cleaned_data['username']
             password = form.cleaned_data['password']
             user = authenticate(username=username,password=password)
-            login(request,user,backend='django.contrib.auth.backends.ModelBackend')
-            messages.success(request,'Successfully Logged In',extra_tags='safe')
-            return HttpResponseRedirect(reverse('applicant',args=[request.user]))
+            if user.first_name == 'applicant' or user.is_superuser:
+                login(request,user,backend='django.contrib.auth.backends.ModelBackend')
+                messages.success(request,'Successfully Logged In',extra_tags='safe')
+                return HttpResponseRedirect(reverse('applicant',args=[request.user]))
+            else:
+                messages.error(request,'Incorrect Credentials')
+                return HttpResponseRedirect(reverse('applicant_login'))
         context = {
             "form":form,
             'login':True,
@@ -33,14 +37,6 @@ def applicant_login_view(request,backend='django.contrib.auth.backends.ModelBack
     else:
         messages.warning(request,'Already Logged In')
         return HttpResponseRedirect(reverse('applicant',args=[request.user]))
-
-
-def applicant_logout_view(request):
-    if request.user.is_authenticated:
-        logout(request)
-        return HttpResponseRedirect(reverse('applicant_login'))
-    else:
-        return HttpResponseRedirect(reverse('applicant_login'))
 
 # @login_required
 def applicant_view(request, user):
@@ -85,16 +81,18 @@ def applicant_view(request, user):
             context = {'applicant_details':applicant_details,'user':user}
         return render(request,"applicant/applicant.html",context)
     elif not request.user.is_authenticated:
-        messages.error(request,'Not Authenticated')
-        print('not autheenticated')
+        messages.error(request,'You are logged out or not authenticated')
         return HttpResponseRedirect(reverse('applicant_login'))
     elif str(user) != str(request.user):
-        raise NameError('please enter username of currently logged in user')
+        messages.error(request,'This username account has been logged out. Try logging again')
+        logout(request)
+        return HttpResponseRedirect(reverse('applicant_login'))
 
-def applicant_registration_view(request,backend='django.contrib.auth.backends.ModelBackend'):
+def applicant_registration_view(request):
     form = ApplicantRegistrationForm(request.POST or None)
     if form.is_valid():
         new_user = form.save(commit=False)
+        new_user.first_name = 'applicant'
         new_user.save()
         messages.success(request, "Successfully Registered. Confirm your mail first.")
         return HttpResponseRedirect(reverse('applicant_register'))

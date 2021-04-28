@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+
+{% block page_title %}
+{{request.user}} - TechParadise
+{% endblock %}
+
+{% block content %}
+Company Username : {{request.user}}
+{% endblock %}

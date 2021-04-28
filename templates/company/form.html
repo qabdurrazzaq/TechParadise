@@ -1,11 +1,12 @@
 {% extends 'base.html' %}
+
 {% load static %}
 
 {% block page_title %}
 {% if login %}
-Applicant - Login
+Comany - Login
 {% else %}
-Applicant - Sign In
+Company - Register
 {% endif %}
 {% endblock %}
 
@@ -25,7 +26,7 @@ Applicant - Sign In
                         <a href="{% url 'applicant_google_login' %}" class="btn btn-default"><img src="{% static 'img/google_logo.jpeg' %}" width="25px"></a>
                     </div>
                     <hr>
-                    <p class="text-center">Don't have an account? <strong><a href="{% url 'applicant_register' %}" class="link-success">Sign In</a></strong></p>
+                    <p class="text-center">Don't have an account? <strong><a href="{% url 'company_register' %}" class="link-success">Sign In</a></strong></p>
                 </div>
             </div>
             {% else %}
@@ -39,7 +40,7 @@ Applicant - Sign In
                         <a href="{% url 'applicant_google_login' %}" class="btn btn-default"><img src="{% static 'img/google_logo.jpeg' %}" width="25px"></a>
                     </div>
                     <hr>
-                    <p class="text-center">Already have an account? <strong><a href="{% url 'applicant_login' %}" class="link-success">Login</a></strong></p>
+                    <p class="text-center">Already have an account? <strong><a href="{% url 'company_login' %}" class="link-success">Login</a></strong></p>
                 </div>
             </div>
             <br>

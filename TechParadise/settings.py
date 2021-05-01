@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.google',
     'applicant',
     'company',
+    'home',
 ]
 
 
@@ -54,6 +55,8 @@ SITE_ID = 1
 
 LOGIN_REDIRECT_URL = 'http://localhost:8000/redirect'
 LOGOUT_REDIRECT_URL = 'http://localhost:8000/redirect'
+
+# AUTH_USER_MODEL = 'home.User'
 
 from .credentials import google_client_id, google_client_secret_key
 

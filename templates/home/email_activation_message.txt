@@ -1,4 +1,4 @@
 Hello {{user}},
-To activate your account head here;
+To activate your company account head here;
 {{email_activation_url}}.
 Thanks.

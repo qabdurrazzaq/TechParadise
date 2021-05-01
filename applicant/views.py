@@ -7,10 +7,8 @@ from django.shortcuts import render, HttpResponseRedirect, Http404, HttpResponse
 from django.urls import reverse
 from github import Github
 from .forms import ApplicantLoginForm, ApplicantRegistrationForm
-from .models import ConfirmEmail, ApplicantDetail
+from .models import ApplicantDetail
 import json
-import os
-import re
 import requests
 
 # Create your views here.
@@ -89,45 +87,17 @@ def applicant_view(request, user):
         return HttpResponseRedirect(reverse('applicant_login'))
 
 def applicant_registration_view(request):
-    form = ApplicantRegistrationForm(request.POST or None)
-    if form.is_valid():
-        new_user = form.save(commit=False)
-        new_user.first_name = 'applicant'
+    applicant_form = ApplicantRegistrationForm(request.POST or None)
+    if applicant_form.is_valid():
+        new_user = applicant_form.save(commit=False)
         new_user.save()
         messages.success(request, "Successfully Registered. Confirm your mail first.")
         return HttpResponseRedirect(reverse('applicant_register'))
 
     context = {
-        "form":form,
+        "form":applicant_form,
     }
     return render(request, "applicant/form.html", context)
-
-SHA1_RE = re.compile('^[a-f0-9]{40}$')
-
-def email_activation_view(request,email_activation_key,backend='django.contrib.auth.backends.ModelBackend'):
-    if SHA1_RE.search(email_activation_key):
-        try:
-            instance = ConfirmEmail.objects.get(email_activation_key=email_activation_key)
-        except:
-            instance = None
-            raise Http404
-        if instance is not None and not instance.confirmed:
-            page_message = "Confirmation Successful"
-            instance.confirmed = True
-            instance.email_activation_key = "Confirmed"
-            instance.save()
-            login(request,instance.user,backend='django.contrib.auth.backends.ModelBackend')
-            messages.success(request,'Successfully Logged In',extra_tags='safe')
-            return HttpResponseRedirect(reverse('applicant',args=[instance.user]))
-        elif instance is not None and instance.confirmed:
-            page_message = "Email Already Confirmed"
-        else:
-            page_message=""
-
-        context = {"page_message":page_message}
-        return render(request,"applicant/activation_status.html",context)
-    else:
-        raise Http404
 
 def applicant_details_view(request,user):
     request.session['applicant_det'] = 1

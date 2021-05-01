@@ -37,16 +37,16 @@ def company_logout_view(request):
         return HttpResponseRedirect(reverse('company_login'))
 
 def company_registration_view(request):
-    form = CompanyRegistrationForm(request.POST or None)
-    if form.is_valid():
-        new_user = form.save(commit=False)
+    company_form = CompanyRegistrationForm(request.POST or None)
+    if company_form.is_valid():
+        new_user = company_form.save(commit=False)
         new_user.first_name = 'company'
         new_user.save()
-        messages.success(request, "Successfully Registered. Confirm your mail first.")
+        messages.success(request, "Successfully Registered Company Account. Confirm your mail first.")
         return HttpResponseRedirect(reverse('company_register'))
 
     context = {
-        "form":form,
+        "form":company_form,
     }
     return render(request, "company/form.html", context)
 

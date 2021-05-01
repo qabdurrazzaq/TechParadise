@@ -29,6 +29,7 @@ urlpatterns = [
     # url for home app
     path('',homeviews.homepage_view,name='homepage'),
     path('accounts/logout',homeviews.session_logout_view,name='session_logout'),
+    re_path(r'^accounts/activate/(?P<email_activation_key>\w+)/$', homeviews.email_activation_view, name = 'email_activation'),
 
     # url for applicant app
     path('applicant/accounts/login/',applicantviews.applicant_login_view,name='applicant_login'),
@@ -38,7 +39,6 @@ urlpatterns = [
     path('redirect/',applicantviews.redirect_view,name='redirect'),
     path('accounts/', include('allauth.urls')),
     path('accounts/google/login/',applicantviews.applicant_google_login_view,name='applicant_google_login'),
-    re_path(r'^applicant/activate/(?P<email_activation_key>\w+)/$', applicantviews.email_activation_view, name = 'email_activation_view'),
     re_path(r'^applicant/(?P<user>\w+)/github/$',applicantviews.github_view,name='github'),
     re_path(r'^applicant/(?P<user>\w+)/codeforces/$',applicantviews.codeforces_view,name='codeforces'),
     re_path(r'^applicant/(?P<user>\w+)/codechef/$',applicantviews.codechef_view,name='codechef'),

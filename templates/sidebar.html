@@ -1,51 +1,36 @@
-{% if request.user.is_authenticated %}
-      <div class="d-flex flex-column p-2 bg-light" id="sidebarCollapse">
-        <a href="{% url 'applicant' user %}" class="link-dark text-decoration-none text-center">
-          <span class="fs-4">{{request.user|capfirst}}</span>
-        </a>
-        <hr>
-        <ul class="nav nav-pills flex-column mb-auto" id="sidenav">
-          {% if request.user.first_name == 'applicant' %}
-          <li class="nav-item">
-            <a href="{% url 'applicant' user %}" class="nav-link link-dark text-center" id="profile">
-              Profile
-            </a>
-          </li>
-          <li>
-            <a href="{% url 'github' user %}" class="nav-link link-dark text-center" id="github">
-              Github
-            </a>
-          </li>
-          <li>
-            <a href="{% url 'codeforces' user %}" class="nav-link link-dark text-center" id="codeforces">
-              Codeforces
-            </a>
-          </li>
-          <li>
-            <a href="{% url 'codechef' user %}" class="nav-link link-dark text-center" id="codechef">
-              CodeChef
-            </a>
-          </li>
-          <li>
-            <a href="{% url 'leetcode' user %}" class="nav-link link-dark text-center" id="leetcode">
-              Leetcode
-            </a>
-          </li>
-          {% else %}
-          {% endif %}
-      </ul>
-    </div>
-    <!-- <script>
-      {# block javascript #}
-      $(document).ready(function () {
-        // $('#sidebarCollapse').on('click', function () {
-          //     $('#sidenav').toggleClass('active');
-          // });
-                $('#sidenav ul li').on('click', function () {
-                  $('#sidenav ul .active').removeClass('active');
-                    $(this).addClass('active');
-                  });
-                });
-                {# endblock #}
-              </script> -->
-{% endif %}
+<div class="d-flex flex-column p-2 bg-light" id="sidebarCollapse">
+  <a href="{% url 'applicant' user %}" class="link-dark text-decoration-none text-center">
+    <span class="fs-4">{{request.user|capfirst}}</span>
+  </a>
+  <hr>
+  <ul class="nav nav-pills flex-column mb-auto" id="sidenav">
+    {% if request.user.is_applicant or request.user.is_superuser %}
+    <li class="nav-item">
+      <a href="{% url 'applicant' user %}" class="nav-link link-dark text-center" id="profile">
+        Profile
+      </a>
+    </li>
+    <li>
+      <a href="{% url 'github' user %}" class="nav-link link-dark text-center" id="github">
+        Github
+      </a>
+    </li>
+    <li>
+      <a href="{% url 'codeforces' user %}" class="nav-link link-dark text-center" id="codeforces">
+        Codeforces
+      </a>
+    </li>
+    <li>
+      <a href="{% url 'codechef' user %}" class="nav-link link-dark text-center" id="codechef">
+        CodeChef
+      </a>
+    </li>
+    <li>
+      <a href="{% url 'leetcode' user %}" class="nav-link link-dark text-center" id="leetcode">
+        Leetcode
+      </a>
+    </li>
+    {% else %}
+    {% endif %}
+  </ul>
+</div>

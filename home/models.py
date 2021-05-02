@@ -1,6 +1,6 @@
-from django.contrib.auth.models import AbstractUser
 from django.conf import settings
 from django.core.mail import send_mail
+from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.urls import reverse
 from django.template.loader import render_to_string
@@ -15,7 +15,6 @@ class ConfirmEmail(models.Model):
         return "Email Confirmed is: " + str(self.confirmed)
 
     def activate_user_email(self):
-        print("activation: %s" %(self.email_activation_key))
         email_activation_url = "http://localhost:8000%s" %(reverse("email_activation",args=[self.email_activation_key]))
         context = {
             "email_activation_key":self.email_activation_key,
@@ -29,6 +28,6 @@ class ConfirmEmail(models.Model):
     def email_user(self,subject,message,from_email=None,**kwargs):
         send_mail(subject,message,from_email,[self.user.email],kwargs)
 
-# class User(AbstractUser):
-#     is_student = models.BooleanField(default=False)
-#     is_teacher = models.BooleanField(default=False)
+class User(AbstractUser):
+    is_applicant = models.BooleanField(default=False)
+    is_company = models.BooleanField(default=False)

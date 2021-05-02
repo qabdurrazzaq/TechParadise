@@ -17,12 +17,12 @@ Applicant - Sign In
             {% if login %}
             <div class="card" style="margin-top: 75px;">
                 <div class="card-body centered">
-                    <h1 class="h3 mb-3 fw-normal text-center">Login</h1>
+                    <h1 class="h3 mb-3 fw-normal text-center">Applicant Login</h1>
                     {{form.as_p}}
                     <center><button class="form-control btn btn-lg btn-success text-center" type="submit">Login</button><br><br></center>
                     <p class="text-center text-muted">____________________ or login with ____________________</p>
                     <div class="text-center">
-                        <a href="{% url 'applicant_google_login' %}" class="btn btn-default"><img src="{% static 'img/google_logo.jpeg' %}" width="25px"></a>
+                        <a href="{% url 'google_login' %}" class="btn btn-default" onclick="setSession();"><img src="{% static 'img/google_logo.jpeg' %}" width="25px"></a>
                     </div>
                     <hr>
                     <p class="text-center">Don't have an account? <strong><a href="{% url 'applicant_register' %}" class="link-success">Sign In</a></strong></p>
@@ -31,12 +31,12 @@ Applicant - Sign In
             {% else %}
             <div class="card" style="margin-top: 10px;">
                 <div class="card-body">
-                    <h1 class="h3 mb-3 fw-normal text-center">Sign In</h1>
+                    <h1 class="h3 mb-3 fw-normal text-center">Applicant Sign In</h1>
                     {{form.as_p}}
                     <center><button class="form-control btn btn-lg btn-success text-center" type="submit">Sign In</button><br><br></center>
                     <p class="text-center text-muted">____________________ or signin with ____________________</p>
                     <div class="text-center">
-                        <a href="{% url 'applicant_google_login' %}" class="btn btn-default"><img src="{% static 'img/google_logo.jpeg' %}" width="25px"></a>
+                        <a href="{% url 'google_login' %}" class="btn btn-default" onclick="setSession();"><img src="{% static 'img/google_logo.jpeg' %}" width="25px"></a>
                     </div>
                     <hr>
                     <p class="text-center">Already have an account? <strong><a href="{% url 'applicant_login' %}" class="link-success">Login</a></strong></p>
@@ -48,3 +48,11 @@ Applicant - Sign In
     </div>
 </form>
 {% endblock %}
+
+<script>
+    {% block jquery %}
+    function setSession(){
+        request.session['usertype'] = 'applicant'
+    }
+    {% endblock %}
+</script>

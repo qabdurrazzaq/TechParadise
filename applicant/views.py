@@ -14,112 +14,124 @@ import requests
 # Create your views here.
 
 def applicant_login_view(request,backend='django.contrib.auth.backends.ModelBackend'):
-    if not request.user.is_authenticated:
+    if request.user.is_authenticated:
+        logout(request)
+        return HttpResponseRedirect(reverse('applicant_login'))
+    else:
         form = ApplicantLoginForm(request.POST or None)
         if form.is_valid():
             username = form.cleaned_data['username']
             password = form.cleaned_data['password']
             user = authenticate(username=username,password=password)
-            if user.first_name == 'applicant' or user.is_superuser:
+            if user.is_applicant or user.is_superuser:
                 login(request,user,backend='django.contrib.auth.backends.ModelBackend')
-                messages.success(request,'Successfully Logged In',extra_tags='safe')
+                messages.success(request,'Successfully Logged In')
                 return HttpResponseRedirect(reverse('applicant',args=[request.user]))
             else:
-                messages.error(request,'Incorrect Credentials')
+                messages.error(request,'Invalid Username Or Password')
                 return HttpResponseRedirect(reverse('applicant_login'))
         context = {
-            "form":form,
+            'form':form,
             'login':True,
         }
-        return render(request, "applicant/form.html", context)
-    else:
-        messages.warning(request,'Already Logged In')
-        return HttpResponseRedirect(reverse('applicant',args=[request.user]))
+        return render(request,'applicant/form.html',context)
 
-# @login_required
 def applicant_view(request, user):
-    request.session['sidebar_view'] = 1
-    if request.user.is_authenticated and str(user) == str(request.user):
-        try:
-            applicant_det = request.session['applicant_det']
-        except:
-            applicant_det = None
-        try:
-            applicant_details_user = ApplicantDetail.objects.get_or_create(user=request.user)
-        except:
-            HttpResponseRedirect(reverse('applicant_login'))
-        try:
-            applicant_details = ApplicantDetail.objects.get(user=request.user)
-        except:
-            applicant_details = None
-        if applicant_det == 1:
-            applicant_details.first_name = request.POST.get('first_name')
-            applicant_details.last_name = request.POST.get('last_name')
-            applicant_details.qualification = request.POST.get('qualification')
-            applicant_details.interest = request.POST.get('interest')
-            applicant_details.achievements = request.POST.get('achievements')
-            applicant_details.about = request.POST.get('about')
-            try:
-                applicant_details.github_username = request.POST.get('github_username')
-            except:
-                applicant_details.github_username = None
-            if applicant_details.github_username is not None:
-                access_token = settings.GIT_API_TOKEN
-                g = Github(access_token)
-                try:
-                    git_user = g.get_user(applicant_details.github_username)
-                except:
-                    git_user = None
-                    messages.error(request,"Invalid Github Username")
-                    return HttpResponseRedirect(reverse('applicant_details',args=[request.user]))
-            applicant_details.save()
-            context = {'applicant_details':applicant_details}
-            request.session['applicant_det'] = 0
-        else:
-            context = {'applicant_details':applicant_details,'user':user}
-        return render(request,"applicant/applicant.html",context)
-    elif not request.user.is_authenticated:
+    if not request.user.is_authenticated:
         messages.error(request,'You are logged out or not authenticated')
         return HttpResponseRedirect(reverse('applicant_login'))
-    elif str(user) != str(request.user):
-        messages.error(request,'This username account has been logged out. Try logging again')
-        logout(request)
+    elif request.user.is_applicant or request.user.is_superuser:
+        if request.user.is_authenticated and str(user) == str(request.user):
+            try:
+                applicant_det = request.session['applicant_det']
+            except:
+                applicant_det = None
+            try:
+                applicant_details_user = ApplicantDetail.objects.get_or_create(user=request.user)
+            except:
+                HttpResponseRedirect(reverse('applicant_login'))
+            try:
+                applicant_details = ApplicantDetail.objects.get(user=request.user)
+            except:
+                applicant_details = None
+            if applicant_det == 1:
+                applicant_details.first_name = request.POST.get('first_name')
+                applicant_details.last_name = request.POST.get('last_name')
+                applicant_details.qualification = request.POST.get('qualification')
+                applicant_details.interest = request.POST.get('interest')
+                applicant_details.achievements = request.POST.get('achievements')
+                applicant_details.about = request.POST.get('about')
+                try:
+                    applicant_details.github_username = request.POST.get('github_username')
+                except:
+                    applicant_details.github_username = None
+                if applicant_details.github_username is not None:
+                    access_token = settings.GIT_API_TOKEN
+                    g = Github(access_token)
+                    try:
+                        git_user = g.get_user(applicant_details.github_username)
+                    except:
+                        git_user = None
+                        messages.error(request,"Invalid Github Username")
+                        return HttpResponseRedirect(reverse('applicant_details',args=[request.user]))
+                applicant_details.save()
+                context = {'applicant_details':applicant_details}
+                request.session['applicant_det'] = 0
+            else:
+                context = {'applicant_details':applicant_details,'user':user}
+            return render(request,"applicant/applicant.html",context)
+        elif str(user) != str(request.user):
+            messages.error(request,'This username account has been logged out. Try logging again')
+            logout(request)
+            return HttpResponseRedirect(reverse('applicant_login'))
+        else:
+            messages.error(request,'Invalid Username or Password')
+            if request.user.is_authenticated:
+                logout(request)
+            return HttpResponseRedirect(reverse('applicant_login'))
+    else:
+        for key, value in request.session.items():
+            print('{} => {}'.format(key, value))
+        request.user.is_applicant = True
         return HttpResponseRedirect(reverse('applicant_login'))
 
 def applicant_registration_view(request):
-    applicant_form = ApplicantRegistrationForm(request.POST or None)
-    if applicant_form.is_valid():
-        new_user = applicant_form.save(commit=False)
-        new_user.save()
-        messages.success(request, "Successfully Registered. Confirm your mail first.")
+    if request.user.is_authenticated:
+        logout(request)
         return HttpResponseRedirect(reverse('applicant_register'))
+    else:
+        print('form')
+        applicant_form = ApplicantRegistrationForm(request.POST or None)
+        if applicant_form.is_valid():
+            new_user = applicant_form.save(commit=False)
+            new_user.is_applicant = True
+            new_user.save()
+            messages.success(request, "Successfully Registered. Confirm your mail first.")
+            return HttpResponseRedirect(reverse('applicant_register'))
 
-    context = {
-        "form":applicant_form,
-    }
-    return render(request, "applicant/form.html", context)
+        context = {
+            "form":applicant_form,
+        }
+        return render(request, "applicant/form.html", context)
 
 def applicant_details_view(request,user):
-    request.session['applicant_det'] = 1
-    request.session['sidebar_view'] = 0
-    context = {'user':user}
-    return render(request,'applicant/applicant_details.html',context)
-
-def applicant_google_login_view(request):
-    return HttpResponseRedirect(reverse('applicant_google_login',args=['?process=login']))
-
-def redirect_view(request):
-    return HttpResponseRedirect(reverse('applicant',args=[request.user]))
+    if request.user.is_authenticated:
+        request.session['applicant_det'] = 1
+        context = {'user':user}
+        return render(request,'applicant/applicant_details.html',context)
+    else:
+        messages.error(request,'You are logged out or not authenticated')
+        return HttpResponseRedirect(reverse('applicant_login'))
 
 def github_view(request,user):
-    request.session['sidebar_view'] = 1
     access_token = settings.GIT_API_TOKEN
     try:
         username = request.GET.get('q')
         if username is None:
             try:
                 applicant_details = ApplicantDetail.objects.get(user=request.user)
-            except:
+            except Exception as e:
+                e.printStackTrace()
                 applicant_details = None
             if applicant_details is not None:
                 if applicant_details.github_username is not None:
@@ -128,13 +140,15 @@ def github_view(request,user):
                     username = None
             else:
                 username = None
-    except:
+    except Exception as e:
+        e.printStackTrace()
         username = None
     if username is not None:
         g = Github(access_token)
         try:
             git_user = g.get_user(username)
-        except:
+        except Exception as e:
+            e.printStackTrace()
             git_user = None
             messages.error(request,"Invalid Github Username")
             return HttpResponseRedirect(reverse('github',args=[user]))
@@ -153,12 +167,12 @@ def github_view(request,user):
     return render(request,'applicant/github.html',context)
 
 def codeforces_view(request,user):
-    request.session['sidebar_view'] = 1
     codeforces_api_key = settings.CODEFORCES_API_KEY
     codeforces_api_secret_key = settings.CODEFORCES_API_SECRET_KEY
     try:
         username = request.GET.get('q')
-    except:
+    except Exception as e:
+        e.printStackTrace()
         username = None
     if username is not None:
         try:
@@ -169,7 +183,8 @@ def codeforces_view(request,user):
                 "codeforces_user_info":codeforces_user_info[0],
                 "codeforces_rating":codeforces_rating,
             }
-        except:
+        except Exception as e:
+            e.printStackTrace()
             messages.error(request,'Invalid Codeforces UserName')
             return HttpResponseRedirect(reverse('codeforces',args=[user]))
     else:
@@ -180,7 +195,6 @@ def codeforces_view(request,user):
     return render(request,'applicant/codeforces.html',context)
 
 def codechef_view(request,user):
-    request.session['sidebar_view'] = 1
     username = request.GET.get('q')
     if username is not None:
         url = settings.X_RAPIDAPI_CODECHEF_URL + "/" + username
@@ -192,7 +206,8 @@ def codechef_view(request,user):
         codechef = json.loads(response.text)
         try:
             status = codechef['status']
-        except:
+        except Exception as e:
+            e.printStackTrace()
             status = None
         if not status:
             codechef = None
@@ -205,7 +220,6 @@ def codechef_view(request,user):
     return render(request,'applicant/codechef.html',context)
 
 def leetcode_view(request,user):
-    request.session['sidebar_view'] = 1
     username = request.GET.get('q')
     if username is not None:
         url = settings.LEETCODE_URL + "/" + username

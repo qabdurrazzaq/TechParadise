@@ -6,8 +6,10 @@ import hashlib
 
 def user_created(sender,instance,created,*args,**kwargs):
     user = instance
+    print(user)
     if created:
         email_confirmed, email_is_created = ConfirmEmail.objects.get_or_create(user=user)
+        print('signals user created')
         if email_is_created:
             short_hash = hashlib.sha1(str(random.random()).encode()).hexdigest()[:5]
             email_activation_key = hashlib.sha1((str(random.random())+short_hash).encode()).hexdigest()

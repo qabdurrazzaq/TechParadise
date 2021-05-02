@@ -13,16 +13,23 @@ def homepage_view(request):
     return render(request, 'home/homepage.html',context)
 
 def session_logout_view(request):
-    logout(request)
-    return HttpResponseRedirect(reverse('homepage'))
+    if request.user.is_authenticated:
+        logout(request)
+        messages.success(request,'Successfully Logged Out')
+        return HttpResponseRedirect(reverse('homepage'))
+    else:
+        messages.error(request,'Already Logged Out')
+        return HttpResponseRedirect(reverse('homepage'))
 
 SHA1_RE = re.compile('^[a-f0-9]{40}$')
 
 def email_activation_view(request,email_activation_key,backend='django.contrib.auth.backends.ModelBackend'):
     if SHA1_RE.search(email_activation_key):
+        print('home email activation view')
         try:
             instance = ConfirmEmail.objects.get(email_activation_key=email_activation_key)
-        except:
+        except Exception as e:
+            e.printStackTrace()
             instance = None
         if instance is not None and not instance.confirmed:
             page_message = "Confirmation Successful"
@@ -31,7 +38,12 @@ def email_activation_view(request,email_activation_key,backend='django.contrib.a
             instance.save()
             login(request,instance.user,backend='django.contrib.auth.backends.ModelBackend')
             messages.success(request,'Successfully Logged In',extra_tags='safe')
-            return HttpResponseRedirect(reverse('applicant',args=[instance.user]))
+            if instance.user.is_applicant:
+                return HttpResponseRedirect(reverse('applicant',args=[instance.user]))
+            elif instance.user.is_company:
+                return HttpResponseRedirect(reverse('company',args=[instance.user]))
+            else:
+                return HttpResponseRedirect(reverse('homepage'))
         elif instance is not None and instance.confirmed:
             page_message = "Email Already Confirmed"
         else:
@@ -41,3 +53,10 @@ def email_activation_view(request,email_activation_key,backend='django.contrib.a
         return render(request,"home/activation_status.html",context)
     else:
         raise Http404
+
+def redirect_view(request):
+    print('redirect '+str(request.user))
+    return HttpResponseRedirect(reverse('applicant',args=[request.user]))
+
+def google_login_view(request):
+    return HttpResponseRedirect(reverse('google_login',args=['/?process=login']))

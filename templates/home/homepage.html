@@ -5,10 +5,12 @@ Tech Paradise
 {% endblock %}
 
 {% block content %}
-<h2 class="text-center">Welcome to Tech Paradise</h2>
-{% if not request.user.is_authenticated %}
-<h4 class="text-center" style="margin: 50px 0px 50px 0px;">Get Started</h4>
-<div class="row">
+<div class="{% if request.user.is_authenticated %}col-sm-10{% endif %}">
+
+    <h2 class="text-center">Welcome to Tech Paradise</h2>
+    {% if not request.user.is_authenticated %}
+    <h4 class="text-center" style="margin: 50px 0px 50px 0px;">Get Started</h4>
+    <div class="row">
     <div class="col-sm-6">
         <div class="row">
             <div class="col-sm-2"></div>
@@ -35,6 +37,7 @@ Tech Paradise
             </div>
         </div>
     </div>
+</div>
 </div>
 {% endif %}
 {% endblock %}

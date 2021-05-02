@@ -13,9 +13,11 @@ from django.shortcuts import HttpResponseRedirect
 from django.urls import reverse
 from pathlib import Path
 import os
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+AUTH_USER_MODEL = 'home.User'
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
@@ -54,9 +56,6 @@ INSTALLED_APPS = [
 SITE_ID = 1
 
 LOGIN_REDIRECT_URL = 'http://localhost:8000/redirect'
-LOGOUT_REDIRECT_URL = 'http://localhost:8000/redirect'
-
-# AUTH_USER_MODEL = 'home.User'
 
 from .credentials import google_client_id, google_client_secret_key
 

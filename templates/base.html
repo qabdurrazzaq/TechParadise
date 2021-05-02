@@ -40,23 +40,21 @@
             {% endfor %}
             {% endif %}
             {% if request.user.is_authenticated %}
-            {% if request.session.sidebar_view == 1 %}
             <div class="col-sm-2" style="padding: 0; background-color: rgb(300, 243, 300);">
               {% include 'sidebar.html' %}
             </div>
-            {% endif %}
             {% endif %}
             {% block content %}
             {% endblock %}
         </div>
     </div>
-</body>
-<script>
-  {% block javascript %}
-  {% endblock %}
-</script>
-<script src="{% static 'js/jquery.min.js' %}"></script>
-<script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
-<script src="{% static 'js/bootstrap.min.js' %}"></script>
-<script src="{% static 'js/popper.min.js' %}"></script>
+  </body>
+  <script src="{% static 'js/jquery.min.js' %}"></script>
+  <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+  <script src="{% static 'js/bootstrap.min.js' %}"></script>
+  <script src="{% static 'js/popper.min.js' %}"></script>
+  <script>
+      {% block jquery %}
+      {% endblock %}
+  </script>
 </html>

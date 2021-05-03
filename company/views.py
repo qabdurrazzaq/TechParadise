@@ -4,6 +4,7 @@ from django.contrib.auth import logout, login, authenticate
 from django.shortcuts import render, HttpResponseRedirect, Http404, HttpResponse
 from django.urls import reverse
 from home.models import UserRole
+from .models import CompanyDetail
 # Create your views here.
 
 def company_login_view(request):
@@ -13,10 +14,10 @@ def company_login_view(request):
     else:
         form = CompanyLoginForm(request.POST or None)
         if form.is_valid():
-            username = form.cleaned_data['username']
-            password = form.cleaned_data['password']
+            username = form.cleaned_data['companyname']
+            password = form.cleaned_data['companypassword']
             user = authenticate(username=username,password=password)
-            if user.is_Company or user.is_superuser:
+            if user.is_company or user.is_superuser:
                 login(request,user,backend='django.contrib.auth.backends.ModelBackend')
                 messages.success(request,'Successfully Logged In')
                 return HttpResponseRedirect(reverse('company',args=[request.user]))
@@ -51,25 +52,79 @@ def set_company_user_role_view(request):
     role = UserRole()
     role.user_role = 'company'
     role.save()
-    return HttpResponseRedirect(reverse('applicant_google_login'))
+    return HttpResponseRedirect(reverse('company_google_login'))
 
 def company_google_login_view(request):
     return HttpResponseRedirect(reverse('company_google_login',args=['/?process=login']))
 
 def company_view(request,user):
+    # if not request.user.is_authenticated:
+    #     messages.error(request,'You are logged out or not authenticated')
+    #     return HttpResponseRedirect(reverse('company_login'))
+    # elif request.user.is_company and request.user.is_authenticated:
+    #     context = {'user':user}
+    #     return render(request,'company/company.html',context)
+    # elif str(user) != str(request.user):
+    #     messages.error(request,'This username account has been logged out or not registered. Try again')
+    #     if request.user.is_authenticated:
+    #         logout(request)
+    #     return HttpResponseRedirect(reverse('company_login'))
+    # else:
+    #     messages.error(request,'Invalid Username or Password')
+    #     if request.user.is_authenticated:
+    #         logout(request)
+    #     return HttpResponseRedirect(reverse('applicant_login'))
     if not request.user.is_authenticated:
         messages.error(request,'You are logged out or not authenticated')
         return HttpResponseRedirect(reverse('company_login'))
-    elif request.user.is_company and request.user.is_authenticated:
-        context = {'user':user}
-        return render(request,'company/company.html',context)
-    elif str(user) != str(request.user):
-        messages.error(request,'This username account has been logged out. Try logging again')
-        if request.user.is_authenticated:
+    elif request.user.is_company or request.user.is_superuser:
+        if request.user.is_authenticated and str(user) == str(request.user):
+            try:
+                company_det = request.session['company_det']
+            except Exception as e:
+                print(e)
+                company_det = None
+            try:
+                company_details_user = CompanyDetail.objects.get_or_create(user=request.user)
+            except Exception as e:
+                print(e)
+                HttpResponseRedirect(reverse('company_login'))
+            try:
+                company_details = CompanyDetail.objects.get(user=request.user)
+            except Exception as e:
+                print(e)
+                company_details = None
+            if company_det == 1:
+                company_details.first_name = request.POST.get('first_name')
+                company_details.last_name = request.POST.get('last_name')
+                company_details.qualification = request.POST.get('qualification')
+                company_details.interest = request.POST.get('interest')
+                company_details.achievements = request.POST.get('achievements')
+                company_details.about = request.POST.get('about')
+                company_details.save()
+                context = {'company_details':company_details}
+                request.session['company_det'] = 0
+            else:
+                context = {'company_details':company_details,'user':user}
+            return render(request,"company/company.html",context)
+        elif str(user) != str(request.user):
+            messages.error(request,'This username account has been logged out. Try logging again')
             logout(request)
-        return HttpResponseRedirect(reverse('company_login'))
+            return HttpResponseRedirect(reverse('company_login'))
+        else:
+            messages.error(request,'Invalid Username or Password')
+            if request.user.is_authenticated:
+                logout(request)
+            return HttpResponseRedirect(reverse('company_login'))
     else:
-        messages.error(request,'Invalid Username or Password')
-        if request.user.is_authenticated:
-            logout(request)
-        return HttpResponseRedirect(reverse('applicant_login'))
+        request.user.is_company = True
+        return HttpResponseRedirect(reverse('company_login'))
+
+def company_details_view(request,user):
+    if request.user.is_authenticated:
+        request.session['company_det'] = 1
+        context = {'user':user}
+        return render(request,'company/company_details.html',context)
+    else:
+        messages.error(request,'You are logged out or not authenticated')
+        return HttpResponseRedirect(reverse('company_login'))

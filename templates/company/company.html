@@ -5,5 +5,44 @@
 {% endblock %}
 
 {% block content %}
-Company Username : {{request.user}}
+<div class="col-sm-10">
+    <div class="alert alert-info alert-dismissible fade show" role="alert" style="padding-bottom: 0px;margin-bottom: -1px;">
+        <p class="messages text-center">
+          Hello {{request.user}}. Finding Employees? Get Employees <a href="#" class="link-success">here</a>.
+        </p>
+    </div>
+    <br>
+    <div class="row">
+        <div class="col-sm-10">
+            Username : {{request.user}} <br>
+            {% if company_details.first_name is not None %}
+            Full Name = {{company_details.first_name}} {{company_details.last_name}} <br>
+            {% if company_details.github_username %}
+            Github Username: {{company_details.github_username}} <br>
+            {% endif %}
+            {% if company_details.qualification %}
+            Qualifications: {{company_details.qualification}} <br>
+            {% endif %}
+            {% if company_details.achievements %}
+            Achievements: {{company_details.achievements}} <br>
+            {% endif %}
+            {% if company_details.interest %}
+            Interests: {{company_details.interest}} <br>
+            {% endif %}
+            {% if company_details.about %}
+            About: {{company_details.about}}
+            {% endif %}
+            {% else %}
+            {% endif %}
+        </div>
+        <div class="col-sm-2">
+            {% if company_details.first_name is not None %}
+            <a href="{% url 'company_details' user %}" class="btn btn-success">Edit Profile</a>
+            {% else %}
+            <a href="{% url 'company_details' user %}" class="btn btn-success">Add Profile</a> <br>
+            <small style="text-align: right; font-size: small" class="text-muted">Complete Your Profile.</small>
+            {% endif %}
+        </div>
+    </div>
+</div>
 {% endblock %}

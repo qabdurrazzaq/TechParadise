@@ -49,6 +49,7 @@ urlpatterns = [
     path('company/accounts/login/',companyviews.company_login_view,name='company_login'),
     path('company/accounts/register/',companyviews.company_registration_view,name='company_register'),
     re_path(r'^company/(?P<user>\w+)/$',companyviews.company_view,name='company'),
+    re_path(r'^company/(?P<user>\w+)/details',companyviews.company_details_view,name='company_details'),
     path('accounts/google/login',companyviews.company_google_login_view,name='company_google_login'),
     path('company/role',companyviews.set_company_user_role_view,name='set_company_user_role'),
 ]

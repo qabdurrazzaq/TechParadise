@@ -6,7 +6,7 @@
   <ul class="nav nav-pills flex-column mb-auto" id="sidenav">
     {% if request.user.is_applicant or request.user.is_superuser %}
     <li class="nav-item">
-      <a href="{% url 'applicant' user %}" class="nav-link link-dark text-center" id="profile">
+      <a href="{% url 'applicant' user %}" class="nav-link link-dark text-center" id="applicantprofile">
         Profile
       </a>
     </li>
@@ -31,6 +31,11 @@
       </a>
     </li>
     {% else %}
+    <li class="nav-item">
+      <a href="{% url 'company' user %}" class="nav-link link-dark text-center" id="companyprofile">
+        Profile
+      </a>
+    </li>
     {% endif %}
   </ul>
 </div>

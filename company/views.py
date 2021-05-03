@@ -3,6 +3,7 @@ from django.contrib import messages
 from django.contrib.auth import logout, login, authenticate
 from django.shortcuts import render, HttpResponseRedirect, Http404, HttpResponse
 from django.urls import reverse
+from home.models import UserRole
 # Create your views here.
 
 def company_login_view(request):
@@ -45,6 +46,15 @@ def company_registration_view(request):
             "form":company_form,
         }
         return render(request, "company/form.html", context)
+
+def set_company_user_role_view(request):
+    role = UserRole()
+    role.user_role = 'company'
+    role.save()
+    return HttpResponseRedirect(reverse('applicant_google_login'))
+
+def company_google_login_view(request):
+    return HttpResponseRedirect(reverse('company_google_login',args=['/?process=login']))
 
 def company_view(request,user):
     if not request.user.is_authenticated:

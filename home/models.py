@@ -31,3 +31,14 @@ class ConfirmEmail(models.Model):
 class User(AbstractUser):
     is_applicant = models.BooleanField(default=False)
     is_company = models.BooleanField(default=False)
+
+USER_ROLES = (
+    ('applicant','applicant'),
+    ('company','company'),
+)
+
+class UserRole(models.Model):
+    user_role = models.CharField(max_length=120,choices=USER_ROLES,null=True,blank=True)
+
+    def __str__(self):
+        return str(self.user_role)

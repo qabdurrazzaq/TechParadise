@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, HttpResponseRedirect, Http404, HttpResponse
 from django.urls import reverse
 from github import Github
+from home.models import UserRole
 from .forms import ApplicantLoginForm, ApplicantRegistrationForm
 from .models import ApplicantDetail
 import json
@@ -44,15 +45,18 @@ def applicant_view(request, user):
         if request.user.is_authenticated and str(user) == str(request.user):
             try:
                 applicant_det = request.session['applicant_det']
-            except:
+            except Exception as e:
+                print(e)
                 applicant_det = None
             try:
                 applicant_details_user = ApplicantDetail.objects.get_or_create(user=request.user)
-            except:
+            except Exception as e:
+                print(e)
                 HttpResponseRedirect(reverse('applicant_login'))
             try:
                 applicant_details = ApplicantDetail.objects.get(user=request.user)
-            except:
+            except Exception as e:
+                print(e)
                 applicant_details = None
             if applicant_det == 1:
                 applicant_details.first_name = request.POST.get('first_name')
@@ -63,14 +67,16 @@ def applicant_view(request, user):
                 applicant_details.about = request.POST.get('about')
                 try:
                     applicant_details.github_username = request.POST.get('github_username')
-                except:
+                except Exception as e:
+                    print(e)
                     applicant_details.github_username = None
                 if applicant_details.github_username is not None:
                     access_token = settings.GIT_API_TOKEN
                     g = Github(access_token)
                     try:
                         git_user = g.get_user(applicant_details.github_username)
-                    except:
+                    except Exception as e:
+                        print(e)
                         git_user = None
                         messages.error(request,"Invalid Github Username")
                         return HttpResponseRedirect(reverse('applicant_details',args=[request.user]))
@@ -90,8 +96,6 @@ def applicant_view(request, user):
                 logout(request)
             return HttpResponseRedirect(reverse('applicant_login'))
     else:
-        for key, value in request.session.items():
-            print('{} => {}'.format(key, value))
         request.user.is_applicant = True
         return HttpResponseRedirect(reverse('applicant_login'))
 
@@ -100,7 +104,7 @@ def applicant_registration_view(request):
         logout(request)
         return HttpResponseRedirect(reverse('applicant_register'))
     else:
-        print('form')
+        print('applicant_register')
         applicant_form = ApplicantRegistrationForm(request.POST or None)
         if applicant_form.is_valid():
             new_user = applicant_form.save(commit=False)
@@ -108,11 +112,20 @@ def applicant_registration_view(request):
             new_user.save()
             messages.success(request, "Successfully Registered. Confirm your mail first.")
             return HttpResponseRedirect(reverse('applicant_register'))
-
         context = {
             "form":applicant_form,
         }
         return render(request, "applicant/form.html", context)
+
+def set_applicant_user_role_view(request):
+    role = UserRole()
+    role.user_role = 'applicant'
+    role.save()
+    return HttpResponseRedirect(reverse('applicant_google_login'))
+
+
+def applicant_google_login_view(request):
+    return HttpResponseRedirect(reverse('applicant_google_login',args=['/?process=login']))
 
 def applicant_details_view(request,user):
     if request.user.is_authenticated:
@@ -131,7 +144,7 @@ def github_view(request,user):
             try:
                 applicant_details = ApplicantDetail.objects.get(user=request.user)
             except Exception as e:
-                e.printStackTrace()
+                print(e)
                 applicant_details = None
             if applicant_details is not None:
                 if applicant_details.github_username is not None:
@@ -141,14 +154,14 @@ def github_view(request,user):
             else:
                 username = None
     except Exception as e:
-        e.printStackTrace()
+        print(e)
         username = None
     if username is not None:
         g = Github(access_token)
         try:
             git_user = g.get_user(username)
         except Exception as e:
-            e.printStackTrace()
+            print(e)
             git_user = None
             messages.error(request,"Invalid Github Username")
             return HttpResponseRedirect(reverse('github',args=[user]))
@@ -172,7 +185,7 @@ def codeforces_view(request,user):
     try:
         username = request.GET.get('q')
     except Exception as e:
-        e.printStackTrace()
+        print(e)
         username = None
     if username is not None:
         try:
@@ -184,7 +197,7 @@ def codeforces_view(request,user):
                 "codeforces_rating":codeforces_rating,
             }
         except Exception as e:
-            e.printStackTrace()
+            print(e)
             messages.error(request,'Invalid Codeforces UserName')
             return HttpResponseRedirect(reverse('codeforces',args=[user]))
     else:
@@ -207,7 +220,7 @@ def codechef_view(request,user):
         try:
             status = codechef['status']
         except Exception as e:
-            e.printStackTrace()
+            print(e)
             status = None
         if not status:
             codechef = None

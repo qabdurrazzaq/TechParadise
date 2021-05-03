@@ -1,8 +1,8 @@
 from django.contrib.auth import logout, login
 from django.contrib import messages
-from django.shortcuts import render, HttpResponseRedirect, Http404
+from django.shortcuts import render, HttpResponseRedirect, Http404, HttpResponse
 from django.urls import reverse
-from .models import ConfirmEmail
+from .models import ConfirmEmail, UserRole
 import re
 
 # Create your views here.
@@ -25,11 +25,10 @@ SHA1_RE = re.compile('^[a-f0-9]{40}$')
 
 def email_activation_view(request,email_activation_key,backend='django.contrib.auth.backends.ModelBackend'):
     if SHA1_RE.search(email_activation_key):
-        print('home email activation view')
         try:
             instance = ConfirmEmail.objects.get(email_activation_key=email_activation_key)
         except Exception as e:
-            e.printStackTrace()
+            print(e)
             instance = None
         if instance is not None and not instance.confirmed:
             page_message = "Confirmation Successful"
@@ -55,8 +54,31 @@ def email_activation_view(request,email_activation_key,backend='django.contrib.a
         raise Http404
 
 def redirect_view(request):
-    print('redirect '+str(request.user))
-    return HttpResponseRedirect(reverse('applicant',args=[request.user]))
-
-def google_login_view(request):
-    return HttpResponseRedirect(reverse('google_login',args=['/?process=login']))
+    try:
+        role_type = UserRole.objects.all()[0]
+    except Exception as e:
+        print(e)
+        role_type = None
+    if role_type is None:
+        return HttpResponse('failed')
+    if request.user.is_applicant or request.user.is_company:
+        messages.error(request,'Same E-Mail ID cannot be used for Multiple Type Accounts')
+        if role_type.user_role == 'applicant':
+            role_type.delete()
+            return HttpResponseRedirect(reverse('applicant_login'))
+        elif role_type.user_role == 'company':
+            role_type.delete()
+            return HttpResponseRedirect(reverse('company_login'))
+        else:
+            role_type.delete()
+            raise Http404
+    elif role_type.user_role == 'applicant':
+        request.user.is_applicant = True
+        request.user.save()
+        role_type.delete()
+        return HttpResponseRedirect(reverse('applicant',args=[request.user]))
+    elif role_type.user_role == 'company':
+        request.user.is_company = True
+        request.user.save()
+        role_type.delete()
+        return HttpResponseRedirect(reverse('company',args=[request.user]))

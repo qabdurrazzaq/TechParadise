@@ -22,7 +22,7 @@ Applicant - Sign In
                     <center><button class="form-control btn btn-lg btn-success text-center" type="submit">Login</button><br><br></center>
                     <p class="text-center text-muted">____________________ or login with ____________________</p>
                     <div class="text-center">
-                        <a href="{% url 'google_login' %}" class="btn btn-default" onclick="setSession();"><img src="{% static 'img/google_logo.jpeg' %}" width="25px"></a>
+                        <a href="{% url 'set_applicant_user_role' %}" class="btn btn-default" onclick="setSession();"><img src="{% static 'img/google_logo.jpeg' %}" width="25px"></a>
                     </div>
                     <hr>
                     <p class="text-center">Don't have an account? <strong><a href="{% url 'applicant_register' %}" class="link-success">Sign In</a></strong></p>
@@ -36,7 +36,7 @@ Applicant - Sign In
                     <center><button class="form-control btn btn-lg btn-success text-center" type="submit">Sign In</button><br><br></center>
                     <p class="text-center text-muted">____________________ or signin with ____________________</p>
                     <div class="text-center">
-                        <a href="{% url 'google_login' %}" class="btn btn-default" onclick="setSession();"><img src="{% static 'img/google_logo.jpeg' %}" width="25px"></a>
+                        <a href="{% url 'set_applicant_user_role' %}" class="btn btn-default" onclick="setSession();"><img src="{% static 'img/google_logo.jpeg' %}" width="25px"></a>
                     </div>
                     <hr>
                     <p class="text-center">Already have an account? <strong><a href="{% url 'applicant_login' %}" class="link-success">Login</a></strong></p>
@@ -51,8 +51,9 @@ Applicant - Sign In
 
 <script>
     {% block jquery %}
-    function setSession(){
-        request.session['usertype'] = 'applicant'
-    }
+    function setSession() {
+        var data = {}; 
+        $.get('{% url "applicant_google_login" %}', data);
+    };
     {% endblock %}
 </script>

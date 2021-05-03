@@ -31,14 +31,15 @@ urlpatterns = [
     path('accounts/logout',homeviews.session_logout_view,name='session_logout'),
     re_path(r'^accounts/activate/(?P<email_activation_key>\w+)/$', homeviews.email_activation_view, name = 'email_activation'),
     path('redirect/',homeviews.redirect_view,name='redirect'),
-    path('accounts/google/login',homeviews.google_login_view,name='google_login'),
+    path('accounts/', include('allauth.urls')),
 
     # url for applicant app
     path('applicant/accounts/login/',applicantviews.applicant_login_view,name='applicant_login'),
     path('applicant/accounts/register/',applicantviews.applicant_registration_view,name='applicant_register'),
     re_path(r'^applicant/(?P<user>\w+)/$',applicantviews.applicant_view,name='applicant'),
     re_path(r'^applicant/(?P<user>\w+)/details',applicantviews.applicant_details_view,name='applicant_details'),
-    path('accounts/', include('allauth.urls')),
+    path('accounts/google/login/',applicantviews.applicant_google_login_view,name='applicant_google_login'),
+    path('applicant/role',applicantviews.set_applicant_user_role_view,name='set_applicant_user_role'),
     re_path(r'^applicant/(?P<user>\w+)/github/$',applicantviews.github_view,name='github'),
     re_path(r'^applicant/(?P<user>\w+)/codeforces/$',applicantviews.codeforces_view,name='codeforces'),
     re_path(r'^applicant/(?P<user>\w+)/codechef/$',applicantviews.codechef_view,name='codechef'),
@@ -48,6 +49,8 @@ urlpatterns = [
     path('company/accounts/login/',companyviews.company_login_view,name='company_login'),
     path('company/accounts/register/',companyviews.company_registration_view,name='company_register'),
     re_path(r'^company/(?P<user>\w+)/$',companyviews.company_view,name='company'),
+    path('accounts/google/login',companyviews.company_google_login_view,name='company_google_login'),
+    path('company/role',companyviews.set_company_user_role_view,name='set_company_user_role'),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

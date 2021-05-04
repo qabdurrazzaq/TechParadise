@@ -14,25 +14,34 @@
     <br>
     <div class="row">
         <div class="col-sm-10">
-            Username : {{request.user}} <br>
-            {% if company_details.first_name is not None %}
-            Full Name = {{company_details.first_name}} {{company_details.last_name}} <br>
-            {% if company_details.github_username %}
-            Github Username: {{company_details.github_username}} <br>
-            {% endif %}
-            {% if company_details.qualification %}
-            Qualifications: {{company_details.qualification}} <br>
-            {% endif %}
+            <h2>
+                <p class="fw-lighter">
+                    {{ request.user|capfirst }} PVT LTD
+                </p>
+            </h2>
             {% if company_details.achievements %}
-            Achievements: {{company_details.achievements}} <br>
-            {% endif %}
-            {% if company_details.interest %}
-            Interests: {{company_details.interest}} <br>
+            <hr>
+            <p class="lh-base">
+                Achievements: {{company_details.achievements}} <br>
+            </p>
             {% endif %}
             {% if company_details.about %}
-            About: {{company_details.about}}
+            <hr>
+            <p class="fw-bold">
+                About: {{company_details.about}}
+            </p>
             {% endif %}
-            {% else %}
+            {% if company_details.headquarter %}
+            <hr>
+            <h5>
+                <p class="fw-bolder">
+                    Head Quarter:
+                    {{ company_details.headquarter }}
+                </p>
+            </h5>
+            {% endif %}
+            {% if company_quarter_details %}
+            {{ company_quarter_details.subquarter }}
             {% endif %}
         </div>
         <div class="col-sm-2">

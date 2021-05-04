@@ -123,7 +123,6 @@ def set_applicant_user_role_view(request):
     role.save()
     return HttpResponseRedirect(reverse('applicant_google_login'))
 
-
 def applicant_google_login_view(request):
     return HttpResponseRedirect(reverse('applicant_google_login',args=['/?process=login']))
 

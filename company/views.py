@@ -4,7 +4,7 @@ from django.contrib.auth import logout, login, authenticate
 from django.shortcuts import render, HttpResponseRedirect, Http404, HttpResponse
 from django.urls import reverse
 from home.models import UserRole
-from .models import CompanyDetail
+from .models import CompanyDetail,Quarter
 # Create your views here.
 
 def company_login_view(request):
@@ -94,15 +94,27 @@ def company_view(request,user):
             except Exception as e:
                 print(e)
                 company_details = None
+            try:
+                company_quarter_details_user = Quarter.objects.get_or_create(user=request.user)
+            except Exception as e:
+                print(e)
+                HttpResponseRedirect(reverse('company_login'))
+            try:
+                company_quarter_details = Quarter.objects.get(user=request.user)
+            except Exception as e:
+                print(e)
+                company_quarter_details = None
             if company_det == 1:
-                company_details.first_name = request.POST.get('first_name')
-                company_details.last_name = request.POST.get('last_name')
-                company_details.qualification = request.POST.get('qualification')
-                company_details.interest = request.POST.get('interest')
+                company_details.headquarter = request.POST.get('headquarter')
                 company_details.achievements = request.POST.get('achievements')
                 company_details.about = request.POST.get('about')
                 company_details.save()
-                context = {'company_details':company_details}
+                company_quarter_details.subquarter = request.POST.get('subquarter')
+                company_quarter_details.save()
+                context = {
+                    'company_details':company_details,
+                    'company_quarter_details':company_quarter_details,
+                }
                 request.session['company_det'] = 0
             else:
                 context = {'company_details':company_details,'user':user}
